@@ -2,7 +2,7 @@ import userModel from "../models/user.model.js";
 import { config } from "../config/config.js";
 import jwt from "jsonwebtoken";
 
-async function sendTokenResponse(user, res, message,status) {
+async function sendTokenResponse(user, res, message, status) {
   const token = jwt.sign({ id: user._id }, config.JWT_SECRET, {
     expiresIn: "10d",
   });
@@ -17,7 +17,7 @@ async function sendTokenResponse(user, res, message,status) {
       email: user.email,
       contact: user.contact,
       fullname: user.fullname,
-      role:user.role
+      role: user.role,
     },
   });
 }
@@ -39,45 +39,62 @@ export const registerUser = async (req, res) => {
       contact,
       password,
       fullname,
-      role:isSeller?"seller":"buyer"
+      role: isSeller ? "seller" : "buyer",
     });
 
-    await sendTokenResponse(user, res, "user registered successfully.",201);
+    await sendTokenResponse(user, res, "user registered successfully.", 201);
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: "Server error" });
   }
 };
 
-export const loginUser = async (req,res)=>{
-  const {email,password} = req.body
+export const loginUser = async (req, res) => {
+  const { email, password } = req.body;
 
   try {
-    
-    let user = await userModel.findOne({email});
-    if(!user){
+    let user = await userModel.findOne({ email });
+    if (!user) {
       return res.status(404).json({
-        message:"user not found",
-      })
+        message: "user not found",
+      });
     }
 
-    let isPasswordValid = await user.comparePassword(password)
-    if(!isPasswordValid){
+    let isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
       return res.status(401).json({
-        message:"invalid password",
-      })
+        message: "invalid password",
+      });
     }
 
-    await sendTokenResponse(user, res, "user logged in successfully.",200);
-
-
+    await sendTokenResponse(user, res, "user logged in successfully.", 200);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Server error" });
   }
-}
+};
 
-export const googleLogin = async (req,res)=>{
-  console.log(req.user)
-  res.redirect("http://localhost:5173/")
-}
+export const googleLogin = async (req, res) => {
+  const { id, displayName, emails } = req.user;
+
+  const email = emails[0].value;
+  try {
+    let user = await userModel.findOne({ email });
+    if (!user) {
+      user = await userModel.create({
+        email,
+        fullname: displayName,
+        googleId:id,
+      });
+    }
+    const token = jwt.sign({id:user._id}, config.JWT_SECRET, {
+      expiresIn:"10d",
+    })
+    res.cookie("token", token)
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+  res.redirect("http://localhost:5173/");
+
+};

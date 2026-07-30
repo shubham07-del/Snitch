@@ -6,6 +6,8 @@ import authRouter from "./routes/auth.routes.js";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { config } from "./config/config.js";
+import productRouter from "./routes/product.routes.js";
+
 
 const app = express();
 
@@ -32,8 +34,6 @@ passport.use(
     },
   ),
 );
-console.log(config.GOOGLE_CLIENT_ID);
-console.log(config.GOOGLE_CALLBACK_URL);
 
 // Logger
 if (process.env.NODE_ENV === "development" || !process.env.NODE_ENV) {
@@ -45,5 +45,7 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 app.use("/api/auth", authRouter);
+app.use("/api/products", productRouter)
+
 
 export default app;
