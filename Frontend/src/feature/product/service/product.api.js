@@ -5,8 +5,8 @@ const api = axios.create({
     withCredentials:true
 })
 
-export async function createProduct({productName, description, priceAmount, priceCurrency, image}){
-    const response = await api.post("/", {productName, description, priceAmount, priceCurrency, image})
+export async function createProduct(formData){
+    const response = await api.post("/", formData)
     return response.data
 }
 

@@ -7,6 +7,7 @@ import {
   googleLogin,
   loginUser,
   registerUser,
+  getMe,
 } from "../controllers/auth.controller.js";
 import passport from "passport";
 import { config } from "../config/config.js";
@@ -15,6 +16,7 @@ const authRouter = Router();
 
 authRouter.post("/register", registerValidator, registerUser);
 authRouter.post("/login", loginValidator, loginUser);
+authRouter.get("/me", getMe);
 authRouter.get(
   "/google",
   passport.authenticate("google", {
