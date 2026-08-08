@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import ContinueWithGoogle from "../components/ContinueWithGoogle";
+import ThemeToggle from "../../../app/ThemeToggle";
+
+
 
 const Login = () => {
   const { handleLogin } = useAuth();
@@ -21,28 +24,40 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await handleLogin({
+    const loggedInUser = await handleLogin({
       email: form.email,
       password: form.password,
     });
 
-    navigate("/");
+    if (!loggedInUser) return;
+
+    if (loggedInUser.role !== "seller") {
+      navigate("/");
+    } else {
+      navigate("/seller/products");
+    }
   };
 
   return (
-    <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-6 font-[Inter,sans-serif] relative overflow-hidden">
+    <div className="min-h-screen bg-surface flex items-center justify-center p-6 font-[Inter,sans-serif] relative overflow-hidden">
+      {/* Theme toggle — top right */}
+      <div className="absolute top-4 right-4 z-20">
+        <ThemeToggle size="sm" />
+      </div>
+
+
       {/* Background effects */}
       {/* Soft ambient glow */}
       <div
         className="absolute top-[-20%] right-[-10%] w-125 h-125 rounded-full opacity-[0.12]"
         style={{
-          background: "radial-gradient(circle, #ffffff 0%, transparent 70%)",
+          background: "radial-gradient(circle, var(--color-glow) 0%, transparent 70%)",
         }}
       />
       <div
         className="absolute bottom-[-15%] left-[-10%] w-100 h-100 rounded-full opacity-[0.08]"
         style={{
-          background: "radial-gradient(circle, #ffffff 0%, transparent 70%)",
+          background: "radial-gradient(circle, var(--color-glow) 0%, transparent 70%)",
         }}
       />
 
@@ -54,8 +69,8 @@ const Login = () => {
             45deg,
             transparent,
             transparent 10px,
-            #ffffff 10px,
-            #ffffff 11px
+            var(--color-stitch) 10px,
+            var(--color-stitch) 11px
           )`,
         }}
       />
@@ -65,31 +80,31 @@ const Login = () => {
         className="absolute top-1/2 left-0 w-full h-px opacity-[0.15]"
         style={{
           backgroundImage:
-            "repeating-linear-gradient(90deg, #ffffff 0px, #ffffff 6px, transparent 6px, transparent 12px)",
+            "repeating-linear-gradient(90deg, var(--color-stitch) 0px, var(--color-stitch) 6px, transparent 6px, transparent 12px)",
         }}
       />
 
       <div className="w-full max-w-md relative z-10">
         {/* Header */}
         <div className="mb-4 text-center">
-          <p className="text-[10px] text-neutral-600 uppercase tracking-[4px] mb-1">
+          <p className="text-[10px] text-muted uppercase tracking-[4px] mb-1">
             Est. 2025
           </p>
-          <h1 className="text-2xl font-bold text-white tracking-[6px]">
+          <h1 className="text-2xl font-bold text-primary tracking-[6px]">
             SNITCH
           </h1>
-          <div className="w-8 h-px bg-neutral-700 mx-auto mt-2 mb-1"></div>
-          <p className="text-neutral-500 text-[13px]">Welcome back</p>
+          <div className="w-8 h-px bg-divider mx-auto mt-2 mb-1"></div>
+          <p className="text-secondary text-[13px]">Welcome back</p>
         </div>
 
         {/* Card */}
-        <div className="bg-neutral-900/80 border border-neutral-800/60 rounded-2xl p-5">
+        <div className="bg-surface-card border border-border-theme rounded-2xl p-5">
           <form onSubmit={handleSubmit} className="space-y-3">
             {/* Email */}
             <div>
               <label
                 htmlFor="email"
-                className="block text-[11px] font-medium text-neutral-500 uppercase tracking-wider mb-1"
+                className="block text-[11px] font-medium text-secondary uppercase tracking-wider mb-1"
               >
                 Email
               </label>
@@ -101,7 +116,7 @@ const Login = () => {
                 value={form.email}
                 onChange={handleChange}
                 required
-                className="w-full h-9 bg-neutral-950 border border-neutral-800 rounded-lg px-3.5 text-sm text-white placeholder-neutral-600 outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600/20 transition-all"
+                className="w-full h-9 bg-surface-input border border-border-input rounded-lg px-3.5 text-sm text-primary placeholder-placeholder outline-none focus:border-border-focus focus:ring-1 focus:ring-border-focus/20 transition-all"
               />
             </div>
 
@@ -109,7 +124,7 @@ const Login = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-[11px] font-medium text-neutral-500 uppercase tracking-wider mb-1"
+                className="block text-[11px] font-medium text-secondary uppercase tracking-wider mb-1"
               >
                 Password
               </label>
@@ -122,12 +137,12 @@ const Login = () => {
                   value={form.password}
                   onChange={handleChange}
                   required
-                  className="w-full h-9 bg-neutral-950 border border-neutral-800 rounded-lg px-3.5 pr-10 text-sm text-white placeholder-neutral-600 outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600/20 transition-all"
+                  className="w-full h-9 bg-surface-input border border-border-input rounded-lg px-3.5 pr-10 text-sm text-primary placeholder-placeholder outline-none focus:border-border-focus focus:ring-1 focus:ring-border-focus/20 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-600 hover:text-neutral-400 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-secondary transition-colors"
                 >
                   {showPassword ? (
                     <svg
@@ -172,19 +187,19 @@ const Login = () => {
             {/* Submit */}
             <button
               type="submit"
-              className="w-full h-11 cursor-pointer bg-white hover:bg-neutral-100 text-neutral-950 text-[13px] font-bold tracking-widest uppercase rounded-xl active:scale-[0.99] transition-all"
-              style={{ boxShadow: "0 4px 24px rgba(255,255,255,0.12)" }}
+              className="w-full h-11 cursor-pointer bg-btn-primary-bg hover:bg-btn-primary-hover text-btn-primary-text text-[13px] font-bold tracking-widest uppercase rounded-xl active:scale-[0.99] transition-all"
+              style={{ boxShadow: "0 4px 24px var(--color-btn-primary-shadow)" }}
             >
               Sign In
             </button>
 
             {/* OR Divider */}
             <div className="flex items-center gap-3 my-1">
-              <div className="flex-1 h-px bg-neutral-800" />
-              <span className="text-[11px] text-neutral-600 font-medium tracking-widest uppercase">
+              <div className="flex-1 h-px bg-divider" />
+              <span className="text-[11px] text-muted font-medium tracking-widest uppercase">
                 or
               </span>
-              <div className="flex-1 h-px bg-neutral-800" />
+              <div className="flex-1 h-px bg-divider" />
             </div>
 
             {/* Google Sign In — gradient border */}
@@ -193,11 +208,11 @@ const Login = () => {
         </div>
 
         {/* Footer */}
-        <p className="text-neutral-600 text-sm text-center mt-4">
+        <p className="text-muted text-sm text-center mt-4">
           Don't have an account?{" "}
           <Link
             to={"/register"}
-            className="text-white hover:text-neutral-300 transition-colors"
+            className="text-primary hover:text-secondary transition-colors"
           >
             Register
           </Link>

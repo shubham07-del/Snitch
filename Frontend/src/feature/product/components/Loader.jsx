@@ -1,10 +1,10 @@
-import React from 'react'
+import React from "react";
 
 const Loader = () => {
   return (
     <div className="flex items-center justify-center py-24">
           <svg
-            className="w-7 h-7 animate-spin text-neutral-600"
+            className="w-7 h-7 animate-spin text-muted"
             fill="none"
             viewBox="0 0 24 24"
           >

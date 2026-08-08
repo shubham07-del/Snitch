@@ -3,6 +3,7 @@ import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Loader from "../components/Loader";
+import ThemeToggle from "../../../app/ThemeToggle";
 
 const CURRENCY_SYMBOLS = {
   INR: "₹",
@@ -32,34 +33,37 @@ const GetSellerProduct = () => {
       {/* Page heading */}
       <div className="flex items-end justify-between mb-6">
         <div>
-          <p className="text-[10px] text-neutral-600 uppercase tracking-[4px] mb-1">
+          <p className="text-[10px] text-muted uppercase tracking-[4px] mb-1">
             Seller Studio
           </p>
-          <h2 className="text-xl font-bold text-white tracking-widest">
+          <h2 className="text-xl font-bold text-primary tracking-widest">
             My Listings
           </h2>
-          <div className="w-8 h-px bg-neutral-800 mt-2" />
+          <div className="w-8 h-px bg-divider mt-2" />
         </div>
-        <Link
-          to="/seller/createProduct"
-          className="flex items-center gap-2 h-9 px-4 bg-white hover:bg-neutral-100 active:scale-[0.98] text-neutral-950 text-[12px] font-bold tracking-widest uppercase rounded-xl transition-all"
-          style={{ boxShadow: "0 4px 20px rgba(255,255,255,0.08)" }}
-        >
-          <svg
-            className="w-3.5 h-3.5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2.5}
+        <div className="flex items-center gap-4">
+          <ThemeToggle size="sm" />
+          <Link
+            to="/seller/createProduct"
+            className="flex items-center gap-2 h-9 px-4 bg-btn-primary-bg hover:bg-btn-primary-hover active:scale-[0.98] text-btn-primary-text text-[12px] font-bold tracking-widest uppercase rounded-xl transition-all"
+            style={{ boxShadow: "0 4px 20px var(--color-btn-primary-shadow)" }}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 4.5v15m7.5-7.5h-15"
-            />
-          </svg>
-          New
-        </Link>
+            <svg
+              className="w-3.5 h-3.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+            New
+          </Link>
+        </div>
       </div>
 
       {/* Loading state */}
@@ -70,9 +74,16 @@ const GetSellerProduct = () => {
       {/* Empty state */}
       {!loading && products.length === 0 && (
         <div className="flex flex-col items-center justify-center py-24 gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-neutral-900 border border-neutral-800 flex items-center justify-center">
+          <div
+            className="w-14 h-14 rounded-2xl flex items-center justify-center border"
+            style={{
+              backgroundColor: "var(--color-empty-icon-bg)",
+              borderColor: "var(--color-empty-icon-border)",
+            }}
+          >
             <svg
-              className="w-6 h-6 text-neutral-600"
+              className="w-6 h-6"
+              style={{ color: "var(--color-empty-icon-text)" }}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -86,16 +97,16 @@ const GetSellerProduct = () => {
             </svg>
           </div>
           <div className="text-center">
-            <p className="text-sm font-semibold text-white mb-1">
+            <p className="text-sm font-semibold text-primary mb-1">
               No products yet
             </p>
-            <p className="text-[12px] text-neutral-500">
+            <p className="text-[12px] text-secondary">
               Start by listing your first product.
             </p>
           </div>
           <Link
             to="/seller/createProduct"
-            className="mt-1 h-9 px-5 flex items-center gap-2 bg-white hover:bg-neutral-100 text-neutral-950 text-[12px] font-bold tracking-widest uppercase rounded-xl transition-all"
+            className="mt-1 h-9 px-5 flex items-center gap-2 bg-btn-primary-bg hover:bg-btn-primary-hover text-btn-primary-text text-[12px] font-bold tracking-widest uppercase rounded-xl transition-all"
           >
             Create Product
           </Link>
@@ -108,10 +119,10 @@ const GetSellerProduct = () => {
           {products.map((product) => (
             <div
               key={product._id}
-              className="group bg-neutral-900/80 border border-neutral-800/60 rounded-2xl overflow-hidden hover:border-neutral-700 transition-all duration-200"
+              className="group bg-surface-card border border-border-theme rounded-2xl overflow-hidden hover:border-border-focus transition-all duration-200"
             >
               {/* Image */}
-              <div className="relative aspect-[4/3] bg-neutral-950 overflow-hidden">
+              <div className="relative aspect-[4/3] bg-surface overflow-hidden">
                 {product.images?.[0]?.url ? (
                   <img
                     src={product.images[0].url}
@@ -121,7 +132,7 @@ const GetSellerProduct = () => {
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <svg
-                      className="w-8 h-8 text-neutral-800"
+                      className="w-8 h-8 text-divider"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -137,7 +148,14 @@ const GetSellerProduct = () => {
                 )}
                 {/* Image count badge */}
                 {product.images?.length > 1 && (
-                  <span className="absolute bottom-2 right-2 text-[10px] font-medium text-neutral-300 bg-neutral-950/80 border border-neutral-800 rounded-md px-1.5 py-0.5">
+                  <span
+                    className="absolute bottom-2 right-2 text-[10px] font-medium rounded-md px-1.5 py-0.5"
+                    style={{
+                      color: "var(--color-image-badge-text)",
+                      backgroundColor: "var(--color-image-badge-bg)",
+                      border: "1px solid var(--color-image-badge-border)",
+                    }}
+                  >
                     +{product.images.length - 1}
                   </span>
                 )}
@@ -145,21 +163,21 @@ const GetSellerProduct = () => {
 
               {/* Info */}
               <div className="p-4">
-                <h3 className="text-sm font-semibold text-white truncate mb-1">
+                <h3 className="text-sm font-semibold text-primary truncate mb-1">
                   {product.productName}
                 </h3>
-                <p className="text-[12px] text-neutral-500 line-clamp-2 mb-3 leading-relaxed">
+                <p className="text-[12px] text-secondary line-clamp-2 mb-3 leading-relaxed">
                   {product.description}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-white">
+                  <span className="text-sm font-bold text-primary">
                     {CURRENCY_SYMBOLS[product.price?.currency] ?? ""}
                     {Number(product.price?.amount).toLocaleString()}
-                    <span className="ml-1 text-[10px] font-normal text-neutral-500">
+                    <span className="ml-1 text-[10px] font-normal text-secondary">
                       {product.price?.currency}
                     </span>
                   </span>
-                  <span className="text-[10px] text-neutral-600 uppercase tracking-wider">
+                  <span className="text-[10px] text-muted uppercase tracking-wider">
                     {new Date(product.createdAt).toLocaleDateString("en-IN", {
                       day: "2-digit",
                       month: "short",

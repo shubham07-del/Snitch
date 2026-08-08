@@ -22,7 +22,9 @@ export const useAuth = ()=>{
         try {
             const data = await login({email, password})
             dispatch(setUser(data.user))
+            return data.user
         } catch (error) {
+            console.error("[useAuth] handleLogin error:", error)
             dispatch(setError(error.message))
         } finally {
             dispatch(setLoading(false))

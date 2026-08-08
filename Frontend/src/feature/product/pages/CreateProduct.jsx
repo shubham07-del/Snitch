@@ -1,6 +1,8 @@
 import React, { useState, useRef } from "react";
 import { useProduct } from "../hooks/useProduct";
 import { useNavigate } from "react-router-dom";
+import ThemeToggle from "../../../app/ThemeToggle";
+
 
 const CURRENCIES = ["INR", "USD", "JPY", "GBP", "EUR"];
 
@@ -94,18 +96,21 @@ const CreateProduct = () => {
 
   return (
     <div className="w-full max-w-lg mx-auto py-8 px-4 sm:px-8">
-      <div className="mb-5">
-        <p className="text-[10px] text-neutral-600 uppercase tracking-[4px] mb-1">New Listing</p>
-        <h2 className="text-xl font-bold text-white tracking-widest">Create Product</h2>
-        <div className="w-8 h-px bg-neutral-800 mt-2" />
+      <div className="mb-5 flex items-end justify-between">
+        <div>
+          <p className="text-[10px] text-muted uppercase tracking-[4px] mb-1">New Listing</p>
+          <h2 className="text-xl font-bold text-primary tracking-widest">Create Product</h2>
+          <div className="w-8 h-px bg-divider mt-2" />
+        </div>
+        <ThemeToggle size="sm" />
       </div>
 
-      <div className="bg-neutral-900/80 border border-neutral-800/60 rounded-2xl p-6">
+      <div className="bg-surface-card border border-border-theme rounded-2xl p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
               htmlFor="productName"
-              className="block text-[11px] font-medium text-neutral-500 uppercase tracking-wider mb-1"
+              className="block text-[11px] font-medium text-secondary uppercase tracking-wider mb-1"
             >
               Product Name
             </label>
@@ -117,14 +122,14 @@ const CreateProduct = () => {
               value={formData.productName}
               onChange={handleChange}
               required
-              className="w-full h-9 bg-neutral-950 border border-neutral-800 rounded-lg px-3.5 text-sm text-white placeholder-neutral-600 outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600/20 transition-all"
+              className="w-full h-9 bg-surface-input border border-border-input rounded-lg px-3.5 text-sm text-primary placeholder-placeholder outline-none focus:border-border-focus focus:ring-1 focus:ring-border-focus/20 transition-all"
             />
           </div>
 
           <div>
             <label
               htmlFor="description"
-              className="block text-[11px] font-medium text-neutral-500 uppercase tracking-wider mb-1"
+              className="block text-[11px] font-medium text-secondary uppercase tracking-wider mb-1"
             >
               Description
             </label>
@@ -136,12 +141,12 @@ const CreateProduct = () => {
               value={formData.description}
               onChange={handleChange}
               required
-              className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-neutral-600 outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600/20 transition-all resize-none"
+              className="w-full bg-surface-input border border-border-input rounded-lg px-3.5 py-2.5 text-sm text-primary placeholder-placeholder outline-none focus:border-border-focus focus:ring-1 focus:ring-border-focus/20 transition-all resize-none"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-neutral-500 uppercase tracking-wider mb-1">
+            <label className="block text-[11px] font-medium text-secondary uppercase tracking-wider mb-1">
               Price
             </label>
             <div className="flex gap-2">
@@ -151,7 +156,7 @@ const CreateProduct = () => {
                   name="priceCurrency"
                   value={formData.priceCurrency}
                   onChange={handleChange}
-                  className="h-9 bg-neutral-950 border border-neutral-800 rounded-lg pl-3 pr-7 text-sm text-white outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600/20 transition-all appearance-none cursor-pointer"
+                  className="h-9 bg-surface-input border border-border-input rounded-lg pl-3 pr-7 text-sm text-primary outline-none focus:border-border-focus focus:ring-1 focus:ring-border-focus/20 transition-all appearance-none cursor-pointer"
                 >
                   {CURRENCIES.map((c) => (
                     <option key={c} value={c}>
@@ -160,7 +165,7 @@ const CreateProduct = () => {
                   ))}
                 </select>
                 <svg
-                  className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-neutral-500"
+                  className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-secondary"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -175,7 +180,7 @@ const CreateProduct = () => {
               </div>
 
               <div className="relative flex-1">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-neutral-500 select-none">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-secondary select-none">
                   {CURRENCY_SYMBOLS[formData.priceCurrency]}
                 </span>
                 <input
@@ -188,7 +193,7 @@ const CreateProduct = () => {
                   value={formData.priceAmount}
                   onChange={handleChange}
                   required
-                  className="w-full h-9 bg-neutral-950 border border-neutral-800 rounded-lg pl-7 pr-3.5 text-sm text-white placeholder-neutral-600 outline-none focus:border-neutral-600 focus:ring-1 focus:ring-neutral-600/20 transition-all"
+                  className="w-full h-9 bg-surface-input border border-border-input rounded-lg pl-7 pr-3.5 text-sm text-primary placeholder-placeholder outline-none focus:border-border-focus focus:ring-1 focus:ring-border-focus/20 transition-all"
                 />
               </div>
             </div>
@@ -197,14 +202,14 @@ const CreateProduct = () => {
           <div>
             {/* Label with live counter */}
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-[11px] font-medium text-neutral-500 uppercase tracking-wider">
+              <label className="block text-[11px] font-medium text-secondary uppercase tracking-wider">
                 Product Images
               </label>
               <span
                 className={`text-[11px] font-semibold tabular-nums ${
                   formData.images.length >= MAX_IMAGES
                     ? "text-amber-500"
-                    : "text-neutral-500"
+                    : "text-secondary"
                 }`}
               >
                 {formData.images.length} / {MAX_IMAGES}
@@ -221,14 +226,23 @@ const CreateProduct = () => {
                 onDragLeave={() => setDragOver(false)}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl py-7 cursor-pointer transition-all ${
-                  dragOver
-                    ? "border-neutral-500 bg-neutral-800/40"
-                    : "border-neutral-800 bg-neutral-950/60 hover:border-neutral-700 hover:bg-neutral-900/50"
-                }`}
+                className="flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl py-7 cursor-pointer transition-all"
+                style={{
+                  borderColor: dragOver
+                    ? "var(--color-drag-active-border)"
+                    : "var(--color-drag-idle-border)",
+                  backgroundColor: dragOver
+                    ? "var(--color-drag-active-bg)"
+                    : "var(--color-drag-idle-bg)",
+                }}
               >
                 <svg
-                  className={`w-7 h-7 transition-colors ${dragOver ? "text-neutral-300" : "text-neutral-600"}`}
+                  className="w-7 h-7 transition-colors"
+                  style={{
+                    color: dragOver
+                      ? "var(--color-drag-icon-active)"
+                      : "var(--color-drag-icon)",
+                  }}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -240,11 +254,11 @@ const CreateProduct = () => {
                     d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
                   />
                 </svg>
-                <p className="text-[12px] text-neutral-500">
-                  <span className="text-white font-medium">Click to upload</span>{" "}
+                <p className="text-[12px] text-secondary">
+                  <span className="text-primary font-medium">Click to upload</span>{" "}
                   or drag & drop
                 </p>
-                <p className="text-[11px] text-neutral-700">
+                <p className="text-[11px] text-muted">
                   PNG, JPG, WEBP &mdash; up to {MAX_IMAGES} images
                 </p>
                 <input
@@ -283,15 +297,21 @@ const CreateProduct = () => {
                     <img
                       src={src}
                       alt={`preview-${i}`}
-                      className="w-full h-full object-cover rounded-lg border border-neutral-800"
+                      className="w-full h-full object-cover rounded-lg border border-border-input"
                     />
                     <button
                       type="button"
                       onClick={() => removeImage(i)}
-                      className="absolute top-1 right-1 w-5 h-5 bg-neutral-900/90 border border-neutral-700 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-900/80 hover:border-red-700"
+                      className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-900/80 hover:border-red-700"
+                      style={{
+                        backgroundColor: "var(--color-remove-btn-bg)",
+                        borderWidth: "1px",
+                        borderColor: "var(--color-remove-btn-border)",
+                      }}
                     >
                       <svg
-                        className="w-2.5 h-2.5 text-neutral-300"
+                        className="w-2.5 h-2.5"
+                        style={{ color: "var(--color-remove-btn-text)" }}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -310,13 +330,13 @@ const CreateProduct = () => {
             )}
           </div>
 
-          <div className="h-px bg-neutral-800/60" />
+          <div className="h-px bg-divider-subtle" />
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full h-11 cursor-pointer bg-white hover:bg-neutral-100 disabled:bg-neutral-700 disabled:text-neutral-400 text-neutral-950 text-[13px] font-bold tracking-widest uppercase rounded-xl active:scale-[0.99] transition-all flex items-center justify-center gap-2"
-            style={{ boxShadow: "0 4px 24px rgba(255,255,255,0.10)" }}
+            className="w-full h-11 cursor-pointer bg-btn-primary-bg hover:bg-btn-primary-hover disabled:bg-neutral-700 disabled:text-neutral-400 text-btn-primary-text text-[13px] font-bold tracking-widest uppercase rounded-xl active:scale-[0.99] transition-all flex items-center justify-center gap-2"
+            style={{ boxShadow: "0 4px 24px var(--color-btn-primary-shadow)" }}
           >
             {isSubmitting ? (
               <>

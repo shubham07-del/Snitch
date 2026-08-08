@@ -1,23 +1,23 @@
 import React from "react";
 
 /**
- * Google "Sign in with Google" button — Dark variant.
- * Follows official Google branding guidelines (dark theme):
+ * Google "Sign in with Google" button — adapts to theme.
+ * Follows official Google branding guidelines:
  * https://developers.google.com/identity/branding-guidelines
  *
  * Rules followed:
- * - Dark background #131314 with white text (official dark variant)
- * - 1dp border #8E918F on dark background
  * - Full-color Google G logo — not recolored or distorted
  * - Google Sans / Roboto font, sentence-case label
  * - Border radius matches the app's login button (rounded-xl)
+ * - Dark: #131314 bg, white text, #8E918F border
+ * - Light: #ffffff bg, #1f1f1f text, #dadce0 border
  */
 
 const ContinueWithGoogle = () => {
   return (
     <a
       href="/api/auth/google"
-      className="w-full h-11 flex items-center justify-center gap-2.5 rounded-xl border border-[#8E918F] bg-[#131314] hover:bg-[#1e1f20] active:bg-[#28292a] text-white text-sm font-medium tracking-[0.25px] select-none transition-colors duration-150 cursor-pointer no-underline"
+      className="w-full h-11 flex items-center justify-center gap-2.5 rounded-xl border bg-google-bg hover:bg-google-bg-hover active:bg-google-bg-hover text-google-text border-google-border text-sm font-medium tracking-[0.25px] select-none transition-colors duration-150 cursor-pointer no-underline"
       style={{ fontFamily: "'Google Sans', Roboto, Arial, sans-serif" }}
     >
       {/* Official Google G logo — do not recolor or distort */}

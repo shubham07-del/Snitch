@@ -1,12 +1,227 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+/* ================================================================
+   THEME TOKENS — CSS Custom Properties
+   ================================================================
+   Dark = default.  Light = [data-theme="light"] override.
+   ================================================================ */
+
+:root,
+[data-theme="dark"] {
+  --color-surface: #0a0a0a;
+  --color-surface-card: rgba(23, 23, 23, 0.8);
+  --color-surface-input: #0a0a0a;
+  --color-surface-hover: #171717;
+
+  --color-border: rgba(38, 38, 38, 0.6);
+  --color-border-input: #262626;
+  --color-border-focus: #525252;
+
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #737373;
+  --color-text-muted: #525252;
+  --color-text-placeholder: #525252;
+  --color-text-label: #737373;
+
+  --color-btn-primary-bg: #ffffff;
+  --color-btn-primary-text: #0a0a0a;
+  --color-btn-primary-hover: #f5f5f5;
+  --color-btn-primary-shadow: rgba(255, 255, 255, 0.12);
+
+  --color-glow: #ffffff;
+  --color-stitch: #ffffff;
+
+  --color-active-nav-bg: #ffffff;
+  --color-active-nav-text: #0a0a0a;
+  --color-active-nav-icon-bg: #e5e5e5;
+
+  --color-nav-icon-bg: #171717;
+  --color-nav-icon-border: #262626;
+  --color-nav-icon-text: #737373;
+  --color-nav-hover-bg: #171717;
+
+  --color-divider: #262626;
+  --color-divider-subtle: rgba(38, 38, 38, 0.6);
+
+  --color-backdrop: rgba(0, 0, 0, 0.6);
+
+  --color-google-bg: #131314;
+  --color-google-bg-hover: #1e1f20;
+  --color-google-border: #8e918f;
+  --color-google-text: #ffffff;
+
+  --color-checkbox-checked-bg: #ffffff;
+  --color-checkbox-checked-border: #ffffff;
+  --color-checkbox-check: #000000;
+  --color-checkbox-unchecked-bg: #0a0a0a;
+  --color-checkbox-unchecked-border: #404040;
+
+  --color-seller-label: #a3a3a3;
+
+  --color-emerald-dot: #10b981;
+  --color-emerald-glow: 0 0 6px #10b981;
+
+  --color-drag-active-border: #737373;
+  --color-drag-active-bg: rgba(38, 38, 38, 0.4);
+  --color-drag-idle-border: #262626;
+  --color-drag-idle-bg: rgba(10, 10, 10, 0.6);
+  --color-drag-hover-border: #404040;
+  --color-drag-hover-bg: rgba(23, 23, 23, 0.5);
+  --color-drag-icon: #525252;
+  --color-drag-icon-active: #d4d4d4;
+
+  --color-image-badge-bg: rgba(10, 10, 10, 0.8);
+  --color-image-badge-border: #262626;
+  --color-image-badge-text: #d4d4d4;
+
+  --color-remove-btn-bg: rgba(23, 23, 23, 0.9);
+  --color-remove-btn-border: #404040;
+  --color-remove-btn-text: #d4d4d4;
+
+  --color-empty-icon-bg: #171717;
+  --color-empty-icon-border: #262626;
+  --color-empty-icon-text: #525252;
+
+  --color-selection-bg: #ffffff;
+  --color-selection-text: #0a0a0a;
+}
+
+[data-theme="light"] {
+  --color-surface: #fafafa;
+  --color-surface-card: rgba(255, 255, 255, 0.85);
+  --color-surface-input: #f5f5f5;
+  --color-surface-hover: #f0f0f0;
+
+  --color-border: rgba(212, 212, 212, 0.6);
+  --color-border-input: #d4d4d4;
+  --color-border-focus: #a3a3a3;
+
+  --color-text-primary: #0a0a0a;
+  --color-text-secondary: #525252;
+  --color-text-muted: #737373;
+  --color-text-placeholder: #a3a3a3;
+  --color-text-label: #525252;
+
+  --color-btn-primary-bg: #0a0a0a;
+  --color-btn-primary-text: #ffffff;
+  --color-btn-primary-hover: #171717;
+  --color-btn-primary-shadow: rgba(0, 0, 0, 0.12);
+
+  --color-glow: #000000;
+  --color-stitch: #000000;
+
+  --color-active-nav-bg: #0a0a0a;
+  --color-active-nav-text: #ffffff;
+  --color-active-nav-icon-bg: #262626;
+
+  --color-nav-icon-bg: #f5f5f5;
+  --color-nav-icon-border: #e5e5e5;
+  --color-nav-icon-text: #737373;
+  --color-nav-hover-bg: #f0f0f0;
+
+  --color-divider: #e5e5e5;
+  --color-divider-subtle: rgba(212, 212, 212, 0.6);
+
+  --color-backdrop: rgba(0, 0, 0, 0.3);
+
+  --color-google-bg: #ffffff;
+  --color-google-bg-hover: #f5f5f5;
+  --color-google-border: #dadce0;
+  --color-google-text: #1f1f1f;
+
+  --color-checkbox-checked-bg: #0a0a0a;
+  --color-checkbox-checked-border: #0a0a0a;
+  --color-checkbox-check: #ffffff;
+  --color-checkbox-unchecked-bg: #ffffff;
+  --color-checkbox-unchecked-border: #d4d4d4;
+
+  --color-seller-label: #525252;
+
+  --color-emerald-dot: #10b981;
+  --color-emerald-glow: 0 0 6px #10b981;
+
+  --color-drag-active-border: #a3a3a3;
+  --color-drag-active-bg: rgba(229, 229, 229, 0.4);
+  --color-drag-idle-border: #d4d4d4;
+  --color-drag-idle-bg: rgba(245, 245, 245, 0.6);
+  --color-drag-hover-border: #a3a3a3;
+  --color-drag-hover-bg: rgba(240, 240, 240, 0.5);
+  --color-drag-icon: #a3a3a3;
+  --color-drag-icon-active: #525252;
+
+  --color-image-badge-bg: rgba(255, 255, 255, 0.8);
+  --color-image-badge-border: #e5e5e5;
+  --color-image-badge-text: #525252;
+
+  --color-remove-btn-bg: rgba(255, 255, 255, 0.9);
+  --color-remove-btn-border: #d4d4d4;
+  --color-remove-btn-text: #525252;
+
+  --color-empty-icon-bg: #f5f5f5;
+  --color-empty-icon-border: #e5e5e5;
+  --color-empty-icon-text: #a3a3a3;
+
+  --color-selection-bg: #0a0a0a;
+  --color-selection-text: #ffffff;
+}
+
+/* ================================================================
+   TAILWIND v4 — Register semantic tokens as theme colours
+   ================================================================ */
+
+@theme {
+  --color-surface: var(--color-surface);
+  --color-surface-card: var(--color-surface-card);
+  --color-surface-input: var(--color-surface-input);
+  --color-surface-hover: var(--color-surface-hover);
+
+  --color-border-theme: var(--color-border);
+  --color-border-input: var(--color-border-input);
+  --color-border-focus: var(--color-border-focus);
+
+  --color-primary: var(--color-text-primary);
+  --color-secondary: var(--color-text-secondary);
+  --color-muted: var(--color-text-muted);
+  --color-placeholder: var(--color-text-placeholder);
+  --color-label: var(--color-text-label);
+
+  --color-btn-primary-bg: var(--color-btn-primary-bg);
+  --color-btn-primary-text: var(--color-btn-primary-text);
+  --color-btn-primary-hover: var(--color-btn-primary-hover);
+
+  --color-active-nav-bg: var(--color-active-nav-bg);
+  --color-active-nav-text: var(--color-active-nav-text);
+  --color-active-nav-icon-bg: var(--color-active-nav-icon-bg);
+
+  --color-nav-icon-bg: var(--color-nav-icon-bg);
+  --color-nav-icon-border: var(--color-nav-icon-border);
+  --color-nav-icon-text: var(--color-nav-icon-text);
+  --color-nav-hover-bg: var(--color-nav-hover-bg);
+
+  --color-divider: var(--color-divider);
+  --color-divider-subtle: var(--color-divider-subtle);
+
+  --color-google-bg: var(--color-google-bg);
+  --color-google-bg-hover: var(--color-google-bg-hover);
+  --color-google-border: var(--color-google-border);
+  --color-google-text: var(--color-google-text);
+}
+
+/* ================================================================
+   GLOBAL STYLES
+   ================================================================ */
 
 ::selection {
-  background-color: #ffffff;
-  color: #0a0a0a;
+  background-color: var(--color-selection-bg);
+  color: var(--color-selection-text);
 }
 
 ::-moz-selection {
-  background-color: #ffffff;
-  color: #0a0a0a;
+  background-color: var(--color-selection-bg);
+  color: var(--color-selection-text);
+}
+
+/* Smooth theme transitions on the root */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
 }

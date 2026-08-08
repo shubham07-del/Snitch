@@ -6,11 +6,12 @@ const SellerLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-neutral-950 font-[Inter,sans-serif] overflow-hidden">
+    <div className="flex h-screen bg-surface font-[Inter,sans-serif] overflow-hidden">
       {/* ── Mobile backdrop overlay ── */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-20 bg-black/60 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-20 backdrop-blur-sm md:hidden"
+          style={{ backgroundColor: "var(--color-backdrop)" }}
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -21,10 +22,10 @@ const SellerLayout = () => {
       {/* ── Main content ── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Mobile top bar */}
-        <header className="flex items-center gap-3 px-4 py-3 border-b border-neutral-800/60 bg-neutral-950 md:hidden shrink-0">
+        <header className="flex items-center gap-3 px-4 py-3 border-b border-border-theme bg-surface md:hidden shrink-0">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="flex items-center justify-center w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-all"
+            className="flex items-center justify-center w-8 h-8 rounded-lg bg-surface-input border border-border-input text-secondary hover:text-primary hover:border-border-focus transition-all"
             aria-label="Open sidebar"
           >
             <svg
@@ -42,10 +43,10 @@ const SellerLayout = () => {
             </svg>
           </button>
           <div>
-            <p className="text-[9px] text-neutral-600 uppercase tracking-[4px] leading-none">
+            <p className="text-[9px] text-muted uppercase tracking-[4px] leading-none">
               Seller Studio
             </p>
-            <p className="text-sm font-bold text-white tracking-[4px] leading-tight">
+            <p className="text-sm font-bold text-primary tracking-[4px] leading-tight">
               SNITCH
             </p>
           </div>

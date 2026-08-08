@@ -17,7 +17,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <main></main>,
+    element: <main>home</main>,
   },
   {
     // Seller area — sidebar persists across all children

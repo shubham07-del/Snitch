@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 
+
 const navItems = [
   {
     to: "/seller/createProduct",
@@ -55,7 +56,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       className={`
         fixed inset-y-0 left-0 z-30
         w-64 h-screen
-        bg-neutral-950 border-r border-neutral-800/60
+        bg-surface border-r border-border-theme
         flex flex-col
         font-[Inter,sans-serif]
         overflow-hidden
@@ -68,7 +69,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       <div
         className="absolute top-[-30%] right-[-30%] w-64 h-64 rounded-full opacity-[0.08] pointer-events-none"
         style={{
-          background: "radial-gradient(circle, #ffffff 0%, transparent 70%)",
+          background: "radial-gradient(circle, var(--color-glow) 0%, transparent 70%)",
         }}
       />
 
@@ -80,25 +81,31 @@ const Sidebar = ({ isOpen, onClose }) => {
             45deg,
             transparent,
             transparent 10px,
-            #ffffff 10px,
-            #ffffff 11px
+            var(--color-stitch) 10px,
+            var(--color-stitch) 11px
           )`,
         }}
       />
 
       {/* Brand Header */}
-      <div className="relative z-10 px-5 pt-7 pb-6 border-b border-neutral-800/60">
+      <div className="relative z-10 px-5 pt-7 pb-6 border-b border-border-theme">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-[9px] text-neutral-600 uppercase tracking-[4px] mb-0.5">
+            <p className="text-[9px] text-muted uppercase tracking-[4px] mb-0.5">
               Seller Studio
             </p>
-            <h2 className="text-xl font-bold text-white tracking-[6px]">
+            <h2 className="text-xl font-bold text-primary tracking-[6px]">
               SNITCH
             </h2>
             <div className="mt-3 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_#10b981]" />
-              <span className="text-[11px] text-neutral-500">
+              <span
+                className="w-1.5 h-1.5 rounded-full"
+                style={{
+                  backgroundColor: "var(--color-emerald-dot)",
+                  boxShadow: "var(--color-emerald-glow)",
+                }}
+              />
+              <span className="text-[11px] text-secondary">
                 Dashboard active
               </span>
             </div>
@@ -107,7 +114,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           {/* Close button — only visible on mobile */}
           <button
             onClick={onClose}
-            className="md:hidden flex items-center justify-center w-7 h-7 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-500 hover:text-white hover:border-neutral-700 transition-all mt-0.5 shrink-0"
+            className="md:hidden flex items-center justify-center w-7 h-7 rounded-lg bg-surface-input border border-border-input text-secondary hover:text-primary hover:border-border-focus transition-all mt-0.5 shrink-0"
             aria-label="Close sidebar"
           >
             <svg
@@ -127,9 +134,10 @@ const Sidebar = ({ isOpen, onClose }) => {
         </div>
       </div>
 
+
       {/* Navigation */}
       <nav className="relative z-10 flex-1 px-3 py-5 space-y-1">
-        <p className="px-2 mb-3 text-[10px] text-neutral-600 uppercase tracking-[3px]">
+        <p className="px-2 mb-3 text-[10px] text-muted uppercase tracking-[3px]">
           Products
         </p>
 
@@ -141,8 +149,8 @@ const Sidebar = ({ isOpen, onClose }) => {
             className={({ isActive }) =>
               `group flex items-center gap-3.5 px-3 py-2.5 rounded-xl transition-all duration-200 ${
                 isActive
-                  ? "bg-white text-neutral-950"
-                  : "text-neutral-400 hover:bg-neutral-900 hover:text-white"
+                  ? "bg-active-nav-bg text-active-nav-text"
+                  : "text-secondary hover:bg-nav-hover-bg hover:text-primary"
               }`
             }
           >
@@ -152,8 +160,8 @@ const Sidebar = ({ isOpen, onClose }) => {
                 <span
                   className={`flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all ${
                     isActive
-                      ? "bg-neutral-200 text-neutral-950"
-                      : "bg-neutral-900 text-neutral-500 group-hover:bg-neutral-800 group-hover:text-white border border-neutral-800 group-hover:border-neutral-700"
+                      ? "bg-active-nav-icon-bg text-active-nav-text"
+                      : "bg-nav-icon-bg text-nav-icon-text group-hover:bg-nav-hover-bg group-hover:text-primary border border-nav-icon-border group-hover:border-border-focus"
                   }`}
                 >
                   {icon}
@@ -163,19 +171,19 @@ const Sidebar = ({ isOpen, onClose }) => {
                 <div className="flex flex-col min-w-0">
                   <span
                     className={`text-sm font-semibold leading-tight ${
-                      isActive ? "text-neutral-950" : ""
+                      isActive ? "text-active-nav-text" : ""
                     }`}
                   >
                     {label}
                   </span>
-                  <span className="text-[11px] leading-tight truncate text-neutral-600">
+                  <span className="text-[11px] leading-tight truncate text-muted">
                     {description}
                   </span>
                 </div>
 
                 {/* Active dot */}
                 {isActive && (
-                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-neutral-500 shrink-0" />
+                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-secondary shrink-0" />
                 )}
               </>
             )}
@@ -184,15 +192,15 @@ const Sidebar = ({ isOpen, onClose }) => {
       </nav>
 
       {/* Footer */}
-      <div className="relative z-10 px-5 py-4 border-t border-neutral-800/60">
+      <div className="relative z-10 px-5 py-4 border-t border-border-theme">
         <div
           className="absolute top-0 left-5 right-5 h-px opacity-[0.15]"
           style={{
             backgroundImage:
-              "repeating-linear-gradient(90deg, #ffffff 0px, #ffffff 4px, transparent 4px, transparent 8px)",
+              "repeating-linear-gradient(90deg, var(--color-stitch) 0px, var(--color-stitch) 4px, transparent 4px, transparent 8px)",
           }}
         />
-        <p className="text-[10px] text-neutral-700 leading-relaxed">
+        <p className="text-[10px] text-muted leading-relaxed">
           Manage your catalogue, track listings, and grow your store.
         </p>
       </div>
