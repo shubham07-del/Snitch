@@ -37,7 +37,7 @@ export async function createProduct(req,res) {
 }
 
 
-export async function getAllProducts(req,res){
+export async function getAllSellerProducts(req,res){
     const seller = req.user
 
     const products = await productModel.find({
@@ -48,5 +48,32 @@ export async function getAllProducts(req,res){
         message:"all products fetched successfully.",
         success:true,
         products
+    })
+}
+
+export async function getAllProducts(req, res) {
+    const products = await productModel.find()
+
+    if(!products){{
+        return res.status(200).json({
+            message:"No product found.",
+            success:true
+        })
+    }}
+    res.status(200).json({
+        message:"Products fetched successfully.",
+        success:true,
+        products
+    })
+}
+
+export async function getProductDetails(req,res) {
+    const {productId} = req.params
+
+    const product = await productModel.findById(productId)
+    res.status(200).json({
+        message:"Product fetched successfully.",
+        success:true,
+        product
     })
 }

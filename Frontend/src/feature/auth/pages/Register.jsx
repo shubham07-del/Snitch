@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import ContinueWithGoogle from "../components/ContinueWithGoogle";
-import ThemeToggle from "../../../app/ThemeToggle";
+
 
 
 const Register = () => {
@@ -39,10 +39,7 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-surface flex items-center justify-center p-6 font-[Inter,sans-serif] relative overflow-hidden">
-      {/* Theme toggle — top right */}
-      <div className="absolute top-4 right-4 z-20">
-        <ThemeToggle size="sm" />
-      </div>
+
 
 
       {/* Background effects */}

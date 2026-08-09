@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useProduct } from "../hooks/useProduct";
 import { useNavigate } from "react-router-dom";
-import ThemeToggle from "../../../app/ThemeToggle";
+
 
 
 const CURRENCIES = ["INR", "USD", "JPY", "GBP", "EUR"];
@@ -102,7 +102,6 @@ const CreateProduct = () => {
           <h2 className="text-xl font-bold text-primary tracking-widest">Create Product</h2>
           <div className="w-8 h-px bg-divider mt-2" />
         </div>
-        <ThemeToggle size="sm" />
       </div>
 
       <div className="bg-surface-card border border-border-theme rounded-2xl p-6">

@@ -5,6 +5,8 @@ import CreateProduct from "../feature/product/pages/CreateProduct";
 import GetSellerProduct from "../feature/product/pages/GetSellerProduct";
 import SellerLayout from "../feature/product/components/SellerLayout";
 import SellerRoute from "../feature/product/components/SellerRoute";
+import Products from "../feature/product/pages/Products";
+import ProductDetails from "../feature/product/pages/ProductDetails";
 
 export const router = createBrowserRouter([
   {
@@ -17,7 +19,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <main>home</main>,
+    element: <Products/>,
+  },
+  {
+    path: "/product/:productId",
+    element: <ProductDetails/>,
   },
   {
     // Seller area — sidebar persists across all children

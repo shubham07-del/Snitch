@@ -3,7 +3,7 @@ import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Loader from "../components/Loader";
-import ThemeToggle from "../../../app/ThemeToggle";
+
 
 const CURRENCY_SYMBOLS = {
   INR: "₹",
@@ -42,7 +42,6 @@ const GetSellerProduct = () => {
           <div className="w-8 h-px bg-divider mt-2" />
         </div>
         <div className="flex items-center gap-4">
-          <ThemeToggle size="sm" />
           <Link
             to="/seller/createProduct"
             className="flex items-center gap-2 h-9 px-4 bg-btn-primary-bg hover:bg-btn-primary-hover active:scale-[0.98] text-btn-primary-text text-[12px] font-bold tracking-widest uppercase rounded-xl transition-all"
