@@ -9,10 +9,57 @@ const ProductDetails = () => {
   const { productDetails, loading } = useSelector((state) => state.product);
   const { handleGetProductDetails } = useProduct();
   const [activeImage, setActiveImage] = useState(0);
+  const [selectedAttributes, setSelectedAttributes] = useState({});
+  const [activeVariant, setActiveVariant] = useState(null);
 
   useEffect(() => {
     handleGetProductDetails(productId);
   }, [productId]);
+
+  useEffect(() => {
+    setActiveImage(0);
+  }, [activeVariant]);
+
+  // Derive available attributes from variants
+  const availableAttributes = React.useMemo(() => {
+    if (!productDetails?.variants) return {};
+    const attrs = {};
+    productDetails.variants.forEach((variant) => {
+      Object.entries(variant.attributes || {}).forEach(([key, value]) => {
+        if (!attrs[key]) attrs[key] = new Set();
+        attrs[key].add(value);
+      });
+    });
+    Object.keys(attrs).forEach((key) => {
+      attrs[key] = Array.from(attrs[key]);
+    });
+    return attrs;
+  }, [productDetails]);
+
+  const handleAttributeClick = (key, value) => {
+    setSelectedAttributes(prev => {
+      // Toggle off if already selected
+      if (prev[key] === value) {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      }
+      return { ...prev, [key]: value };
+    });
+  };
+
+  useEffect(() => {
+    const variants = productDetails?.variants || [];
+    if (Object.keys(selectedAttributes).length === 0) {
+      setActiveVariant(null);
+      return;
+    }
+    // Find a variant that matches all currently selected attributes
+    const matchingVariant = variants.find(v => {
+      return Object.entries(selectedAttributes).every(([k, val]) => v.attributes?.[k] === val);
+    });
+    setActiveVariant(matchingVariant || null);
+  }, [selectedAttributes, productDetails?.variants]);
 
   if (loading) {
     return (
@@ -36,14 +83,17 @@ const ProductDetails = () => {
     );
   }
 
-  const { productName, description, price, images } = productDetails;
+  const { productName, description, price, images, variants } = productDetails;
+  
+  const currentImages = activeVariant?.images?.length > 0 ? activeVariant.images : (images || []);
+  const currentPrice = activeVariant?.price || price;
   
   // Format price
   const formattedPrice = new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: price?.currency || 'INR',
+    currency: currentPrice?.currency || 'INR',
     maximumFractionDigits: 0,
-  }).format(price?.amount || 0);
+  }).format(currentPrice?.amount || 0);
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900">
@@ -65,9 +115,9 @@ const ProductDetails = () => {
           {/* Image Gallery */}
           <div className="flex flex-col-reverse lg:flex-row lg:items-start lg:gap-x-4">
             {/* Thumbnails (if multiple images) */}
-            {images?.length > 1 && (
+            {currentImages?.length > 1 && (
               <div className="mt-6 flex w-full gap-4 overflow-x-auto lg:mt-0 lg:w-34 lg:flex-col lg:h-[600px] lg:overflow-y-auto custom-scrollbar pr-1">
-                {images.map((img, idx) => (
+                {currentImages.map((img, idx) => (
                   <button 
                     key={idx} 
                     onClick={() => setActiveImage(idx)}
@@ -85,21 +135,21 @@ const ProductDetails = () => {
 
             {/* Main Image */}
             <div className="relative aspect-[4/5] w-full bg-gray-100 sm:rounded-lg lg:flex-1 overflow-hidden group">
-              {images && images.length > 0 ? (
+              {currentImages && currentImages.length > 0 ? (
                 <>
                   <img
-                    src={images[activeImage]?.url}
+                    src={currentImages[activeImage]?.url}
                     alt={productName}
                     className="h-full w-full object-cover object-center"
                   />
                   
                   {/* Left / Right Swipe Navigation */}
-                  {images.length > 1 && (
+                  {currentImages.length > 1 && (
                     <>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          setActiveImage((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+                          setActiveImage((prev) => (prev === 0 ? currentImages.length - 1 : prev - 1));
                         }}
                         className="absolute left-4 top-1/2 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/80 text-gray-800 shadow-md opacity-100 transition-opacity hover:bg-white hover:text-black lg:opacity-0 lg:group-hover:opacity-100"
                         aria-label="Previous image"
@@ -112,7 +162,7 @@ const ProductDetails = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          setActiveImage((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+                          setActiveImage((prev) => (prev === currentImages.length - 1 ? 0 : prev + 1));
                         }}
                         className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/80 text-gray-800 shadow-md opacity-100 transition-opacity hover:bg-white hover:text-black lg:opacity-0 lg:group-hover:opacity-100"
                         aria-label="Next image"
@@ -149,6 +199,66 @@ const ProductDetails = () => {
                 <p>{description}</p>
               </div>
             </div>
+
+            {variants && variants.length > 0 && Object.keys(availableAttributes).length > 0 && (
+              <div className="mt-8 space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-medium text-gray-900">Options</h3>
+                </div>
+
+                {/* Original Product Button */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setSelectedAttributes({})}
+                    className={`flex items-center justify-center rounded-md border px-4 py-2 text-sm font-medium uppercase outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-colors ${
+                      Object.keys(selectedAttributes).length === 0
+                        ? 'border-transparent bg-black text-white hover:bg-gray-800 cursor-pointer'
+                        : 'border-gray-200 bg-white text-gray-900 hover:bg-gray-50 cursor-pointer'
+                    }`}
+                  >
+                    Original Product
+                  </button>
+                </div>
+
+                {Object.entries(availableAttributes).map(([attrKey, attrValues]) => (
+                  <div key={attrKey} className="flex flex-col gap-3">
+                    <h4 className="text-sm font-medium text-gray-900 capitalize">{attrKey}</h4>
+                    <div className="flex flex-wrap gap-3">
+                      {attrValues.map((val) => {
+                        const isSelected = selectedAttributes[attrKey] === val;
+                        
+                        // Check if this option is available given the OTHER selected attributes
+                        const otherSelectedAttrs = { ...selectedAttributes };
+                        delete otherSelectedAttrs[attrKey];
+                        
+                        const isAvailable = variants.some(v => {
+                          const hasVal = v.attributes?.[attrKey] === val;
+                          const matchesOther = Object.entries(otherSelectedAttrs).every(([k, vVal]) => v.attributes?.[k] === vVal);
+                          return hasVal && matchesOther;
+                        });
+
+                        return (
+                          <button
+                            key={val}
+                            disabled={!isAvailable && !isSelected}
+                            onClick={() => handleAttributeClick(attrKey, val)}
+                            className={`flex items-center justify-center rounded-md border px-4 py-2 text-sm font-medium uppercase outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-colors ${
+                              isSelected
+                                ? 'border-transparent bg-black text-white hover:bg-gray-800 cursor-pointer'
+                                : !isAvailable && !isSelected
+                                ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed'
+                                : 'border-gray-200 bg-white text-gray-900 hover:bg-gray-50 cursor-pointer'
+                            }`}
+                          >
+                            {val}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
               <button className="flex cursor-pointer w-full flex-1 items-center justify-center rounded-md border border-transparent bg-black px-8 py-3 text-base font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 focus:ring-offset-gray-50">

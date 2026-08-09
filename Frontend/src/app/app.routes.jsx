@@ -7,6 +7,7 @@ import SellerLayout from "../feature/product/components/SellerLayout";
 import SellerRoute from "../feature/product/components/SellerRoute";
 import Products from "../feature/product/pages/Products";
 import ProductDetails from "../feature/product/pages/ProductDetails";
+import SellerProductDetails from "../feature/product/pages/SellerProductDetails";
 
 export const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ export const router = createBrowserRouter([
         path: "/seller/products",
         element: <SellerRoute><GetSellerProduct /></SellerRoute>
       },
+      {
+        path:"/seller/product/:productId",
+        element:<SellerRoute><SellerProductDetails/></SellerRoute>
+      }
     ],
   },
 ]);

@@ -77,3 +77,57 @@ export async function getProductDetails(req,res) {
         product
     })
 }
+
+export async function addProductVariant(req,res) {
+
+    const {productId} = req.params
+    const product = await productModel.findOne({
+        _id:productId,
+        seller:req.user._id
+    })
+    if(!product){
+        return res.status(404).json({
+            message:"Product not found.",
+            success:false
+        })
+    }
+    
+    const files = req.files
+    const images = []
+    if(files || files.length !== 0){
+        (await Promise.all(files.map(async (file)=>{
+            const image = await uploadFile({
+                buffer:file.buffer,
+                fileName:file.originalname
+            })
+            return image
+        }))).map((image)=>images.push(image))
+    }
+    
+    const stock = req.body.stock || 0;
+    const priceAmount = req.body.priceAmount || product.price.amount;
+    const priceCurrency = req.body.priceCurrency || product.price.currency
+    const attributes = JSON.parse(req.body.attributes || "{}");
+
+    const newVariant = {
+        images,
+        stock,
+        attributes
+    };
+
+    if (priceAmount) {
+        newVariant.price = {
+            amount: priceAmount,
+            currency: priceCurrency
+        };
+    }
+
+    product.variants.push(newVariant);
+    await product.save();
+
+    return res.status(201).json({
+        success: true,
+        message: "Variant added successfully",
+        variant: product.variants[product.variants.length - 1]
+    });
+}

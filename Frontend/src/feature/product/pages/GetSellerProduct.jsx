@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 
 
@@ -14,6 +14,7 @@ const CURRENCY_SYMBOLS = {
 };
 
 const GetSellerProduct = () => {
+  const navigate = useNavigate();
   const { handleGetSellerProduct } = useProduct();
   const products = useSelector((state) => state.product?.sellerProduct ?? []);
   const [loading, setLoading] = useState(true);
@@ -117,6 +118,7 @@ const GetSellerProduct = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {products.map((product) => (
             <div
+            onClick={()=>{navigate(`/seller/product/${product._id}`)}}
               key={product._id}
               className="group bg-surface-card border border-border-theme rounded-2xl overflow-hidden hover:border-border-focus transition-all duration-200"
             >
