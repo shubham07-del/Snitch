@@ -8,8 +8,11 @@ import SellerRoute from "../feature/product/components/SellerRoute";
 import Products from "../feature/product/pages/Products";
 import ProductDetails from "../feature/product/pages/ProductDetails";
 import SellerProductDetails from "../feature/product/pages/SellerProductDetails";
+import Cart from "../feature/cart/pages/Cart";
+import RootLayout from "../components/RootLayout";
 
 export const router = createBrowserRouter([
+  // ── Auth pages (no Navbar) ──
   {
     path: "/register",
     element: <Register />,
@@ -18,16 +21,28 @@ export const router = createBrowserRouter([
     path: "/login",
     element: <Login />,
   },
+
+  // ── Public & buyer pages (with shared Navbar) ──
   {
-    path: "/",
-    element: <Products/>,
+    element: <RootLayout />,
+    children: [
+      {
+        path: "/",
+        element: <Products />,
+      },
+      {
+        path: "/product/:productId",
+        element: <ProductDetails />,
+      },
+      {
+        path: "/cart",
+        element: <SellerRoute><Cart /></SellerRoute>,
+      },
+    ],
   },
+
+  // ── Seller area (sidebar layout, no global Navbar) ──
   {
-    path: "/product/:productId",
-    element: <ProductDetails/>,
-  },
-  {
-    // Seller area — sidebar persists across all children
     element: <SellerLayout />,
     children: [
       {
@@ -36,12 +51,12 @@ export const router = createBrowserRouter([
       },
       {
         path: "/seller/products",
-        element: <SellerRoute><GetSellerProduct /></SellerRoute>
+        element: <SellerRoute><GetSellerProduct /></SellerRoute>,
       },
       {
-        path:"/seller/product/:productId",
-        element:<SellerRoute><SellerProductDetails/></SellerRoute>
-      }
+        path: "/seller/product/:productId",
+        element: <SellerRoute><SellerProductDetails /></SellerRoute>,
+      },
     ],
   },
 ]);

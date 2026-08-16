@@ -47,7 +47,10 @@ const SellerLayout = () => {
               Seller Studio
             </p>
             <p className="text-sm font-bold text-primary tracking-[4px] leading-tight">
-              SNITCH
+              AFTER
+            </p>
+            <p className="text-[8px] text-muted uppercase tracking-[2px]">
+              Ware your way
             </p>
           </div>
         </header>

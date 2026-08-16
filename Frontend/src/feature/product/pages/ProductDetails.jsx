@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
+import { useCart } from "../../cart/hooks/useCart";
 
 const ProductDetails = () => {
   const { productId } = useParams();
@@ -11,6 +12,8 @@ const ProductDetails = () => {
   const [activeImage, setActiveImage] = useState(0);
   const [selectedAttributes, setSelectedAttributes] = useState({});
   const [activeVariant, setActiveVariant] = useState(null);
+
+  const {handleAddItem} = useCart()
 
   useEffect(() => {
     handleGetProductDetails(productId);
@@ -50,14 +53,22 @@ const ProductDetails = () => {
 
   useEffect(() => {
     const variants = productDetails?.variants || [];
+    
     if (Object.keys(selectedAttributes).length === 0) {
-      setActiveVariant(null);
+      if (variants.length === 0) {
+        setActiveVariant(null);
+      } else if (variants.length === 1 && (!variants[0].attributes || Object.keys(variants[0].attributes).length === 0)) {
+        setActiveVariant(variants[0]);
+      } else {
+        setActiveVariant(null);
+      }
       return;
     }
     // Find a variant that matches all currently selected attributes
     const matchingVariant = variants.find(v => {
       return Object.entries(selectedAttributes).every(([k, val]) => v.attributes?.[k] === val);
     });
+    console.log("Matching variant found: ", matchingVariant);
     setActiveVariant(matchingVariant || null);
   }, [selectedAttributes, productDetails?.variants]);
 
@@ -97,18 +108,6 @@ const ProductDetails = () => {
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900">
-      {/* Navigation Bar / Breadcrumb */}
-      <nav className="border-b border-gray-200 px-6 py-4 lg:px-12">
-        <button 
-          onClick={() => navigate(-1)} 
-          className="flex items-center cursor-pointer text-sm font-medium text-gray-500 transition-colors hover:text-black"
-        >
-          <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Back
-        </button>
-      </nav>
 
       <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
@@ -206,20 +205,6 @@ const ProductDetails = () => {
                   <h3 className="text-sm font-medium text-gray-900">Options</h3>
                 </div>
 
-                {/* Original Product Button */}
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setSelectedAttributes({})}
-                    className={`flex items-center justify-center rounded-md border px-4 py-2 text-sm font-medium uppercase outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-colors ${
-                      Object.keys(selectedAttributes).length === 0
-                        ? 'border-transparent bg-black text-white hover:bg-gray-800 cursor-pointer'
-                        : 'border-gray-200 bg-white text-gray-900 hover:bg-gray-50 cursor-pointer'
-                    }`}
-                  >
-                    Original Product
-                  </button>
-                </div>
-
                 {Object.entries(availableAttributes).map(([attrKey, attrValues]) => (
                   <div key={attrKey} className="flex flex-col gap-3">
                     <h4 className="text-sm font-medium text-gray-900 capitalize">{attrKey}</h4>
@@ -261,7 +246,11 @@ const ProductDetails = () => {
             )}
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <button className="flex cursor-pointer w-full flex-1 items-center justify-center rounded-md border border-transparent bg-black px-8 py-3 text-base font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 focus:ring-offset-gray-50">
+              <button onClick={() => {
+                if (productId && activeVariant?._id) handleAddItem({ productId:productId, variantId: activeVariant._id });
+                else console.warn("Missing productId or variantId");
+                
+              }} className="flex cursor-pointer w-full flex-1 items-center justify-center rounded-md border border-transparent bg-black px-8 py-3 text-base font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 focus:ring-offset-gray-50">
                 Add to bag
               </button>
               

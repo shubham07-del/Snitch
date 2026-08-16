@@ -84,12 +84,15 @@ const Register = () => {
         {/* Header */}
         <div className="mb-4 text-center">
           <p className="text-[10px] text-muted uppercase tracking-[4px] mb-1">
-            Est. 2025
+            Est. 2026
           </p>
-          <h1 className="text-2xl font-bold text-primary tracking-[6px]">
-            SNITCH
+          <h1 className="text-2xl font-bold text-primary tracking-[6px] leading-none">
+            AFTER
           </h1>
-          <div className="w-8 h-px bg-divider mx-auto mt-2 mb-1"></div>
+          <p className="text-[11px] text-muted uppercase tracking-[3px] mt-2">
+            Wear your way
+          </p>
+          <div className="w-8 h-px bg-divider mx-auto mt-3 mb-1"></div>
           <p className="text-secondary text-[13px]">Join the club</p>
         </div>
 

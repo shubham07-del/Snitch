@@ -26,7 +26,17 @@ export async function createProduct(req,res) {
                 url:img.url,
             }
         }),
-
+        variants: [
+            {
+                images: images.map((img) => ({ url: img.url })),
+                stock: req.body.stock || 0,
+                attributes: req.body.attributes ? JSON.parse(req.body.attributes) : {},
+                price: {
+                    amount: priceAmount,
+                    currency: priceCurrency || "INR"
+                }
+            }
+        ]
     })
 
     res.status(201).json({

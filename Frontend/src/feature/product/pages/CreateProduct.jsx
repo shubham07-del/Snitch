@@ -24,9 +24,11 @@ const CreateProduct = () => {
     description: "",
     priceAmount: "",
     priceCurrency: "INR",
+    stock: "",
     images: [], // File objects
   });
 
+  const [attributes, setAttributes] = useState([{ key: "", value: "" }]);
   const [previews, setPreviews] = useState([]); // base64 preview URLs
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -34,6 +36,24 @@ const CreateProduct = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAttributeChange = (index, field, value) => {
+    const newAttributes = [...attributes];
+    newAttributes[index][field] = value;
+    setAttributes(newAttributes);
+  };
+
+  const addAttribute = () => {
+    setAttributes([...attributes, { key: "", value: "" }]);
+  };
+
+  const removeAttribute = (index) => {
+    if (attributes.length > 1) {
+      setAttributes(attributes.filter((_, i) => i !== index));
+    } else {
+      setAttributes([{ key: "", value: "" }]);
+    }
   };
 
   const MAX_IMAGES = 7;
@@ -81,6 +101,16 @@ const CreateProduct = () => {
       data.append("description", formData.description);
       data.append("priceAmount", formData.priceAmount);
       data.append("priceCurrency", formData.priceCurrency);
+      data.append("stock", formData.stock);
+      
+      const attrsObj = {};
+      attributes.forEach((attr) => {
+        if (attr.key.trim() && attr.value.trim()) {
+          attrsObj[attr.key.trim()] = attr.value.trim();
+        }
+      });
+      data.append("attributes", JSON.stringify(attrsObj));
+
       formData.images.forEach((file) => {
         data.append("images", file);
       });
@@ -95,7 +125,7 @@ const CreateProduct = () => {
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto py-8 px-4 sm:px-8">
+    <div className="w-full max-w-2xl mx-auto py-8 px-4 sm:px-8">
       <div className="mb-5 flex items-end justify-between">
         <div>
           <p className="text-[10px] text-muted uppercase tracking-[4px] mb-1">New Listing</p>
@@ -195,6 +225,74 @@ const CreateProduct = () => {
                   className="w-full h-9 bg-surface-input border border-border-input rounded-lg pl-7 pr-3.5 text-sm text-primary placeholder-placeholder outline-none focus:border-border-focus focus:ring-1 focus:ring-border-focus/20 transition-all"
                 />
               </div>
+            </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor="stock"
+              className="block text-[11px] font-medium text-secondary uppercase tracking-wider mb-1"
+            >
+              Quantity (Stock)
+            </label>
+            <input
+              id="stock"
+              name="stock"
+              type="number"
+              min="0"
+              placeholder="e.g. 100"
+              value={formData.stock}
+              onChange={handleChange}
+              required
+              className="w-full h-9 bg-surface-input border border-border-input rounded-lg px-3.5 text-sm text-primary placeholder-placeholder outline-none focus:border-border-focus focus:ring-1 focus:ring-border-focus/20 transition-all"
+            />
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-[11px] font-medium text-secondary uppercase tracking-wider">
+                Variant Attributes
+              </label>
+            </div>
+            <div className="space-y-2">
+              {attributes.map((attr, index) => (
+                <div key={index} className="flex gap-2 items-center">
+                  <input
+                    type="text"
+                    placeholder="Key (e.g. Size)"
+                    value={attr.key}
+                    onChange={(e) => handleAttributeChange(index, "key", e.target.value)}
+                    className="flex-1 min-w-0 h-9 bg-surface-input border border-border-input rounded-lg px-3 text-sm text-primary placeholder-placeholder outline-none focus:border-border-focus focus:ring-1 focus:ring-border-focus/20 transition-all"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Value (e.g. M)"
+                    value={attr.value}
+                    onChange={(e) => handleAttributeChange(index, "value", e.target.value)}
+                    className="flex-1 min-w-0 h-9 bg-surface-input border border-border-input rounded-lg px-3 text-sm text-primary placeholder-placeholder outline-none focus:border-border-focus focus:ring-1 focus:ring-border-focus/20 transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeAttribute(index)}
+                    className="p-1.5 text-red-600 bg-red-200 cursor-pointer hover:text-red-500 hover:bg-red-50 rounded-md hover:border transition-colors"
+                    title="Remove Attribute"
+                  >
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addAttribute}
+                className="text-[12px] bg-zinc-900 text-white/80 p-2.5 rounded-lg font-medium text-primary hover:text-emerald-400 flex items-center gap-1 transition-colors mt-2 cursor-pointer"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add Attribute
+              </button>
             </div>
           </div>
 

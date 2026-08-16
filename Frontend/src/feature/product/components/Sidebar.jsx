@@ -94,9 +94,12 @@ const Sidebar = ({ isOpen, onClose }) => {
             <p className="text-[9px] text-muted uppercase tracking-[4px] mb-0.5">
               Seller Studio
             </p>
-            <h2 className="text-xl font-bold text-primary tracking-[6px]">
-              SNITCH
+            <h2 className="text-xl font-bold text-primary tracking-[6px] leading-none">
+              AFTER
             </h2>
+            <p className="text-[10px] text-muted uppercase tracking-[2px] mt-1">
+              Ware your way
+            </p>
             <div className="mt-3 flex items-center gap-2">
               <span
                 className="w-1.5 h-1.5 rounded-full"

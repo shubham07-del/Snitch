@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
 import Loader from "../components/Loader";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 // Swiper
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -42,13 +42,12 @@ const swiperStyles = `
 const Products = () => {
   const { handleGetProducts } = useProduct();
   const { products, loading } = useSelector((state) => state.product);
-  const [search, setSearch] = useState("");
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get("q") || "";
 
   useEffect(() => {
     handleGetProducts();
   }, []);
-
-
 
   const filtered = useMemo(() => {
     if (!search.trim()) return products;
@@ -75,54 +74,6 @@ const Products = () => {
         style={{ background: "radial-gradient(circle, var(--color-glow) 0%, transparent 70%)" }}
       />
 
-      {/* ── Sticky top navbar ── */}
-      <nav
-        className="sticky top-0 z-30 border-b backdrop-blur-xl"
-        style={{
-          backgroundColor: "color-mix(in srgb, var(--color-surface) 85%, transparent)",
-          borderColor: "var(--color-border)",
-        }}
-      >
-        <div className="max-w-[1200px] mx-auto flex items-center justify-between h-14 px-5 sm:px-8 gap-4">
-          {/* Left — brand */}
-          <h1 className="text-lg font-bold text-primary tracking-[5px] select-none shrink-0">
-            SNITCH
-          </h1>
-
-          {/* Center — search bar */}
-          <div className="flex-1 max-w-sm">
-            <div className="relative">
-              <svg
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-              </svg>
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-8 bg-surface-input border border-border-input rounded-full pl-9 pr-8 text-[12px] text-primary placeholder-placeholder outline-none focus:border-border-focus focus:ring-1 focus:ring-border-focus/20 transition-all"
-              />
-              {search && (
-                <button
-                  onClick={() => setSearch("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-primary transition-colors cursor-pointer"
-                >
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              )}
-            </div>
-          </div>
-
-        </div>
-      </nav>
 
       {/* ── Main content ── */}
       <main className="relative z-10 max-w-[1200px] mx-auto px-3 sm:px-5 pt-6 pb-16">
