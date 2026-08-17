@@ -12,7 +12,7 @@ function setCookieAndRespond(res, token, status, body) {
   res.cookie("token", token, {
     httpOnly: true,                    // not accessible via JS — prevents XSS theft
     secure: isProd,                    // HTTPS only in production
-    sameSite: isProd ? "strict" : "lax",
+    sameSite: isProd ? "none" : "lax",
     maxAge: 10 * 24 * 60 * 60 * 1000, // 10 days in ms
   });
   res.status(status).json(body);
@@ -103,7 +103,7 @@ export const googleLogin = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: isProd,
-      sameSite: isProd ? "strict" : "lax",
+      sameSite: isProd ? "none" : "lax",
       maxAge: 10 * 24 * 60 * 60 * 1000,
     });
   } catch (error) {
