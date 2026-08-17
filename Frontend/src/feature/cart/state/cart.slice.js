@@ -22,9 +22,16 @@ const cartSlice = createSlice({
             state.items = state.items
                 .map((item)=> item.product._id === action.payload.productId && item.variant === action.payload.variantId ? {...item, quantity: item.quantity - 1} : item)
                 .filter((item)=> item.quantity > 0)
+        },
+        removeCartItemFromState:(state,action)=>{
+            state.items = state.items.filter((item)=> item.product._id !== action.payload.productId || item.variant !== action.payload.variantId)
+        },
+        clearCart:(state)=>{
+            state.items = []
+            state.total = 0
         }
     }
 })
 
-export const {setItem, addItem, incrementCartItemInState, decrementCartItemInState} = cartSlice.actions
+export const {setItem, addItem, incrementCartItemInState, decrementCartItemInState, removeCartItemFromState, clearCart} = cartSlice.actions
 export default cartSlice.reducer

@@ -2,22 +2,28 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
 import authRouter from "./routes/auth.routes.js";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { config } from "./config/config.js";
 import productRouter from "./routes/product.routes.js";
 import cartRouter from "./routes/cart.routes.js";
+import addressRouter from "./routes/address.routes.js";
 
 const app = express();
+const isProd = config.NODE_ENV === "production";
+
+// Security headers
+app.use(helmet());
 
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: config.FRONTEND_URL,
     credentials: true,
   }),
 );
@@ -35,8 +41,8 @@ passport.use(
   ),
 );
 
-// Logger
-if (process.env.NODE_ENV === "development" || !process.env.NODE_ENV) {
+// Logger — dev only
+if (!isProd) {
   app.use(morgan("dev"));
 }
 
@@ -47,5 +53,13 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRouter);
 app.use("/api/products", productRouter)
 app.use("/api/cart", cartRouter)
+app.use("/api/address",addressRouter)
+
+// Global error handler — never leak stack traces in production
+app.use((err, req, res, next) => {
+  const status = err.status || 500;
+  const message = isProd ? "Internal server error" : err.message;
+  res.status(status).json({ success: false, message });
+});
 
 export default app;

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProduct } from "../hooks/useProduct";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useCart } from "../../cart/hooks/useCart";
+import { useRazorpay } from "react-razorpay";
 
 const ProductDetails = () => {
   const { productId } = useParams();
@@ -13,7 +14,9 @@ const ProductDetails = () => {
   const [selectedAttributes, setSelectedAttributes] = useState({});
   const [activeVariant, setActiveVariant] = useState(null);
 
-  const {handleAddItem} = useCart()
+  const { handleAddItem, handleBuyNow, handleVerifyOrder } = useCart()
+  const { error, isLoading, Razorpay } = useRazorpay();
+  const user = useSelector(state => state.auth.user)
 
   useEffect(() => {
     handleGetProductDetails(productId);
@@ -68,9 +71,51 @@ const ProductDetails = () => {
     const matchingVariant = variants.find(v => {
       return Object.entries(selectedAttributes).every(([k, val]) => v.attributes?.[k] === val);
     });
-    console.log("Matching variant found: ", matchingVariant);
     setActiveVariant(matchingVariant || null);
   }, [selectedAttributes, productDetails?.variants]);
+
+  const handleBuyNowClick = async () => {
+    if (!activeVariant?._id) {
+      alert("Please select a variant before buying.");
+      return;
+    }
+    try {
+      const order = await handleBuyNow({ productId, variantId: activeVariant._id });
+      if (!order) {
+        alert("Failed to create order. Please try again.");
+        return;
+      }
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        name: "AFTER",
+        description: productName,
+        order_id: order.id,
+        handler: async (response) => {
+          const isValid = await handleVerifyOrder({
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+          });
+          if (isValid) {
+            navigate(`/order-success?order_id=${response.razorpay_order_id}`);
+          }
+        },
+        prefill: {
+          name: user?.fullname,
+          email: user?.email,
+          contact: user?.contact,
+        },
+        theme: { color: "#111111", backdrop_color: "rgba(0,0,0,0.75)" },
+      };
+      const razorpayInstance = new Razorpay(options);
+      razorpayInstance.open();
+    } catch (err) {
+      console.error("Buy now error:", err);
+      alert(err?.response?.data?.message ?? "Something went wrong.");
+    }
+  };
 
   if (loading) {
     return (
@@ -254,7 +299,7 @@ const ProductDetails = () => {
                 Add to bag
               </button>
               
-              <button className="flex cursor-pointer w-full flex-1 items-center justify-center rounded-md border border-gray-300 bg-white px-8 py-3 text-base font-medium text-gray-900 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 focus:ring-offset-gray-50">
+              <button  onClick={handleBuyNowClick} className="flex cursor-pointer w-full flex-1 items-center justify-center rounded-md border border-gray-300 bg-white px-8 py-3 text-base font-medium text-gray-900 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 focus:ring-offset-gray-50">
                 Buy now
               </button>
             </div>

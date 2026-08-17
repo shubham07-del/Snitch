@@ -1,5 +1,5 @@
-import { addItem, getCart, incrementCartItem, decrementCartItem } from "../service/cart.api";
-import { setItem, addItem as addItemToCart, incrementCartItemInState, decrementCartItemInState } from "../state/cart.slice";
+import { addItem, getCart, incrementCartItem, decrementCartItem, createCartOrder, verifyCartOrder, removeCartItem, buyNowOrder } from "../service/cart.api";
+import { setItem, addItem as addItemToCart, incrementCartItemInState, decrementCartItemInState, removeCartItemFromState } from "../state/cart.slice";
 import { useDispatch } from "react-redux";
 
 
@@ -29,10 +29,35 @@ export const useCart = ()=>{
         return data
     }
 
+    const handleCreateCartOrder = async()=>{
+        const data = await createCartOrder()
+        return data.order
+    }
+
+    const handleVerifyOrder = async ({razorpay_order_id,razorpay_payment_id,razorpay_signature})=>{
+        const data = await verifyCartOrder({razorpay_order_id,razorpay_payment_id,razorpay_signature})
+        return data.message
+    }
+
+    const handleRemoveCartItem = async ({productId, variantId})=>{{
+        dispatch(removeCartItemFromState({productId, variantId}))
+        const data = await removeCartItem({productId, variantId})
+        return data
+    }}
+
+    const handleBuyNow = async ({productId, variantId})=>{
+        const data = await buyNowOrder({productId, variantId})
+        return data.order
+    }
+
     return {
         handleAddItem,
         handleGetCart,
         handleIncrementCartItem,
-        handleDecrementCartItem
+        handleDecrementCartItem,
+        handleCreateCartOrder,
+        handleVerifyOrder,
+        handleRemoveCartItem,
+        handleBuyNow
     }
 }

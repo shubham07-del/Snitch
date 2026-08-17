@@ -26,7 +26,7 @@ export const authenticateSeller = async (req,res,next)=>{
         req.user = user
         next()
     } catch (error) {
-        console.log(error)
+        console.error("[authenticateSeller]", error.message)
         return res.status(401).json({
             message:"Unauthorized"
         })
@@ -51,7 +51,7 @@ export const authenticateUser = async (req,res,next)=>{
         req.user = user
         next()
     } catch (error) {
-        console.log(error)
+        console.error("[authenticateUser]", error.message)
         return res.status(401).json({
             message:"Unauthorized"
         })

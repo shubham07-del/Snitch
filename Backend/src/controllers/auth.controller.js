@@ -2,15 +2,26 @@ import userModel from "../models/user.model.js";
 import { config } from "../config/config.js";
 import jwt from "jsonwebtoken";
 
-async function sendTokenResponse(user, res, message, status) {
-  const token = jwt.sign({ id: user._id }, config.JWT_SECRET, {
-    expiresIn: "10d",
+const isProd = config.NODE_ENV === "production";
+
+function createToken(userId) {
+  return jwt.sign({ id: userId }, config.JWT_SECRET, { expiresIn: "10d" });
+}
+
+function setCookieAndRespond(res, token, status, body) {
+  res.cookie("token", token, {
+    httpOnly: true,                    // not accessible via JS — prevents XSS theft
+    secure: isProd,                    // HTTPS only in production
+    sameSite: isProd ? "strict" : "lax",
+    maxAge: 10 * 24 * 60 * 60 * 1000, // 10 days in ms
   });
+  res.status(status).json(body);
+}
 
-  res.cookie("token", token);
-
-  res.status(status).json({
-    message: message,
+async function sendTokenResponse(user, res, message, status) {
+  const token = createToken(user._id);
+  setCookieAndRespond(res, token, status, {
+    message,
     success: true,
     user: {
       id: user._id,
@@ -21,6 +32,7 @@ async function sendTokenResponse(user, res, message, status) {
     },
   });
 }
+
 export const registerUser = async (req, res) => {
   const { email, contact, password, fullname, isSeller } = req.body;
 
@@ -44,7 +56,7 @@ export const registerUser = async (req, res) => {
 
     await sendTokenResponse(user, res, "user registered successfully.", 201);
   } catch (err) {
-    console.log(err);
+    console.error("[registerUser]", err.message);
     return res.status(500).json({ message: "Server error" });
   }
 };
@@ -69,7 +81,7 @@ export const loginUser = async (req, res) => {
 
     await sendTokenResponse(user, res, "user logged in successfully.", 200);
   } catch (error) {
-    console.log(error);
+    console.error("[loginUser]", error.message);
     return res.status(500).json({ message: "Server error" });
   }
 };
@@ -84,20 +96,23 @@ export const googleLogin = async (req, res) => {
       user = await userModel.create({
         email,
         fullname: displayName,
-        googleId:id,
+        googleId: id,
       });
     }
-    const token = jwt.sign({id:user._id}, config.JWT_SECRET, {
-      expiresIn:"10d",
-    })
-    res.cookie("token", token)
+    const token = createToken(user._id);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? "strict" : "lax",
+      maxAge: 10 * 24 * 60 * 60 * 1000,
+    });
   } catch (error) {
-    console.log(error);
+    console.error("[googleLogin]", error.message);
     return res.status(500).json({ message: "Server error" });
   }
-  res.redirect("http://localhost:5173/");
-
+  res.redirect(`${config.FRONTEND_URL}/`);
 };
+
 export const getMe = async (req, res) => {
   try {
     const token = req.cookies.token;

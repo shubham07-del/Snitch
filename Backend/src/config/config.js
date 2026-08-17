@@ -17,6 +17,13 @@ if(!process.env.IMAGEKIT_PRIVATE_KEY){
     throw new Error("IMAGEKIT_PRIVATE_KEY is not defined at environment variable.")
 }
 
+if(!process.env.RAZORPAY_API_KEY || !process.env.RAZORPAY_API_SECRET){
+    throw new Error("Razorpay credentials are not defined at environment variable.")
+}
+
+if(!process.env.FRONTEND_URL){
+    throw new Error("FRONTEND_URL is not defined at environment variable.")
+}
 export const config = {
     MONGO_URI:process.env.MONGO_URI,
     JWT_SECRET:process.env.JWT_SECRET,
@@ -25,4 +32,7 @@ export const config = {
     GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL,
     NODE_ENV:process.env.NODE_ENV || "development",
     IMAGEKIT_PRIVATE_KEY:process.env.IMAGEKIT_PRIVATE_KEY,
+    RAZORPAY_API_KEY:process.env.RAZORPAY_API_KEY,
+    RAZORPAY_API_SECRET:process.env.RAZORPAY_API_SECRET,
+    FRONTEND_URL:process.env.FRONTEND_URL,
 }

@@ -3,6 +3,7 @@ import { useProduct } from "../hooks/useProduct";
 import { useSelector } from "react-redux";
 import Loader from "../components/Loader";
 import { Link, useSearchParams } from "react-router-dom";
+import Hero from "../components/Hero";
 
 // Swiper
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -75,6 +76,9 @@ const Products = () => {
       />
 
 
+      {/* ── Hero Section ── */}
+      <Hero />
+
       {/* ── Main content ── */}
       <main className="relative z-10 max-w-[1200px] mx-auto px-3 sm:px-5 pt-6 pb-16">
         {/* Category label + result count */}
@@ -137,7 +141,7 @@ const Products = () => {
 
         {/* ── Product grid ── */}
         {!loading && filtered.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+          <div id="products-grid" className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
             {filtered.map((product) => (
               <Link
                 key={product._id}
