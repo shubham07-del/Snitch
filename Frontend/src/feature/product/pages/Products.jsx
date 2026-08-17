@@ -51,9 +51,10 @@ const Products = () => {
   }, []);
 
   const filtered = useMemo(() => {
-    if (!search.trim()) return products;
+    const validProducts = Array.isArray(products) ? products : [];
+    if (!search.trim()) return validProducts;
     const q = search.toLowerCase();
-    return products.filter(
+    return validProducts.filter(
       (p) =>
         p.productName?.toLowerCase().includes(q) ||
         p.description?.toLowerCase().includes(q)
