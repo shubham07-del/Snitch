@@ -16,7 +16,7 @@ import React from "react";
 const ContinueWithGoogle = () => {
   return (
     <a
-      href="/api/auth/google"
+      href={`${import.meta.env.VITE_API_BASE_URL || ""}/api/auth/google`}
       className="w-full h-11 flex items-center justify-center gap-2.5 rounded-xl border bg-google-bg hover:bg-google-bg-hover active:bg-google-bg-hover text-google-text border-google-border text-sm font-medium tracking-[0.25px] select-none transition-colors duration-150 cursor-pointer no-underline"
       style={{ fontFamily: "'Google Sans', Roboto, Arial, sans-serif" }}
     >
