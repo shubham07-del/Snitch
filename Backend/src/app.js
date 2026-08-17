@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: config.FRONTEND_URL,
+    origin: [config.FRONTEND_URL, config.FRONTEND_URL.replace(/\/$/, "")],
     credentials: true,
   }),
 );
