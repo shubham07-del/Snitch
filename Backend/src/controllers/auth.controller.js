@@ -113,17 +113,59 @@ export const googleLogin = async (req, res) => {
   res.redirect(`${config.FRONTEND_URL}/`);
 };
 
+// export const getMe = async (req, res) => {
+//   try {
+//     const token = req.cookies.token;
+//     if (!token) {
+//       return res.status(401).json({ message: "Not authenticated", user: null });
+//     }
+//     const decoded = jwt.verify(token, config.JWT_SECRET);
+//     const user = await userModel.findById(decoded.id);
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found", user: null });
+//     }
+//     return res.status(200).json({
+//       success: true,
+//       user: {
+//         id: user._id,
+//         email: user.email,
+//         contact: user.contact,
+//         fullname: user.fullname,
+//         role: user.role,
+//       },
+//     });
+//   } catch (error) {
+//     return res.status(401).json({ message: "Not authenticated", user: null });
+//   }
+// };
+
+
 export const getMe = async (req, res) => {
   try {
-    const token = req.cookies.token;
+    console.log("COOKIES:", req.cookies);
+
+    const token = req.cookies?.token;
+    console.log("TOKEN:", token);
+
     if (!token) {
-      return res.status(401).json({ message: "Not authenticated", user: null });
+      return res.status(401).json({
+        message: "Token missing",
+        user: null,
+      });
     }
+
     const decoded = jwt.verify(token, config.JWT_SECRET);
+    console.log("DECODED:", decoded);
+
     const user = await userModel.findById(decoded.id);
+
     if (!user) {
-      return res.status(404).json({ message: "User not found", user: null });
+      return res.status(404).json({
+        message: "User not found",
+        user: null,
+      });
     }
+
     return res.status(200).json({
       success: true,
       user: {
@@ -135,6 +177,11 @@ export const getMe = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(401).json({ message: "Not authenticated", user: null });
+    console.error("GET ME ERROR:", error);
+
+    return res.status(401).json({
+      message: "Not authenticated",
+      user: null,
+    });
   }
 };
