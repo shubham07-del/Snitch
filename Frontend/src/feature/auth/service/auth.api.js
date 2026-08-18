@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const api = axios.create({
-    baseURL: `${import.meta.env.VITE_API_BASE_URL || ""}/api/auth`,
+    baseURL: `https://snitch-t6v0.onrender.com/api/auth`,
     withCredentials:true
 })
 
@@ -18,4 +18,4 @@ export const login = async ({email, password}) => {
 export const getMe = async () => {
     const response = await api.get("/me");
     return response.data;
-}
+}
