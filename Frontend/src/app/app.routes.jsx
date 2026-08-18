@@ -5,6 +5,7 @@ import CreateProduct from "../feature/product/pages/CreateProduct";
 import GetSellerProduct from "../feature/product/pages/GetSellerProduct";
 import SellerLayout from "../feature/product/components/SellerLayout";
 import SellerRoute from "../feature/product/components/SellerRoute";
+import ProtectedRoute from "../feature/auth/components/ProtectedRoute";
 import Products from "../feature/product/pages/Products";
 import ProductDetails from "../feature/product/pages/ProductDetails";
 import SellerProductDetails from "../feature/product/pages/SellerProductDetails";
@@ -37,11 +38,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/cart",
-        element: <SellerRoute><Cart /></SellerRoute>,
+        element: <ProtectedRoute><Cart /></ProtectedRoute>,
       },
       {
         path: "/order-success",
-        element: <SellerRoute><OrderSuccess /></SellerRoute>,
+        element: <ProtectedRoute><OrderSuccess /></ProtectedRoute>,
       },
     ],
   },
