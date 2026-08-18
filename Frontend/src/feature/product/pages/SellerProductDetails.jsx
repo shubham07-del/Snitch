@@ -353,6 +353,7 @@ const SellerProductDetails = () => {
 
                 <div className="pt-4 border-t border-gray-100">
                   <button 
+                    disabled={loading}
                     type="submit" 
                     className="w-full sm:w-auto rounded-lg bg-black px-8 py-3 text-sm font-semibold text-white transition hover:bg-gray-800 cursor-pointer"
                   >

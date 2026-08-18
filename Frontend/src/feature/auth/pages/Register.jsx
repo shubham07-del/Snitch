@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import ContinueWithGoogle from "../components/ContinueWithGoogle";
+import { useSelector } from "react-redux";
+import Loader from "../../product/components/Loader";
 
 
 
 const Register = () => {
   const { handleRegister } = useAuth();
   const navigate = useNavigate();
+  const {loading} = useSelector(state=>state.auth)
+
 
   const [form, setForm] = useState({
     fullname: "",
@@ -37,6 +41,9 @@ const Register = () => {
     navigate("/login");
   };
 
+  if(loading){
+    return <Loader/>
+  }
   return (
     <div className="min-h-screen bg-surface flex items-center justify-center p-6 font-[Inter,sans-serif] relative overflow-hidden">
 
@@ -274,6 +281,7 @@ const Register = () => {
 
             {/* Submit */}
             <button
+              disabled={loading}
               type="submit"
               className="w-full h-11 cursor-pointer bg-btn-primary-bg hover:bg-btn-primary-hover text-btn-primary-text text-[13px] font-bold tracking-widest uppercase rounded-xl active:scale-[0.99] transition-all"
               style={{ boxShadow: "0 4px 24px var(--color-btn-primary-shadow)" }}

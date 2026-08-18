@@ -79,6 +79,9 @@ const ProductDetails = () => {
       alert("Please select a variant before buying.");
       return;
     }
+    if(!user){
+      navigate("/login")
+    }
     try {
       const order = await handleBuyNow({ productId, variantId: activeVariant._id });
       if (!order) {
