@@ -10,10 +10,10 @@ function createToken(userId) {
 
 function setCookieAndRespond(res, token, status, body) {
   res.cookie("token", token, {
-    httpOnly: true,                    // not accessible via JS — prevents XSS theft
-    secure: true,                      // always true — backend is always on HTTPS (Render)
-    sameSite: "none",                  // always none — frontend & backend are cross-origin
-    maxAge: 10 * 24 * 60 * 60 * 1000, // 10 days in ms
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
+    maxAge: 10 * 24 * 60 * 60 * 1000,
   });
   res.status(status).json(body);
 }
@@ -102,15 +102,15 @@ export const googleLogin = async (req, res) => {
     const token = createToken(user._id);
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,                    // always true — backend is always on HTTPS (Render)
-      sameSite: "none",               // always none — frontend & backend are cross-origin
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
       maxAge: 10 * 24 * 60 * 60 * 1000,
     });
   } catch (error) {
     console.error("[googleLogin]", error.message);
     return res.status(500).json({ message: "Server error" });
   }
-  res.redirect(`https://after-coral.vercel.app/`);
+  res.redirect(`${config.FRONTEND_URL}/`);
 };
 
 export const getMe = async (req, res) => {
