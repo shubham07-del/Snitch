@@ -110,7 +110,7 @@ export const googleLogin = async (req, res) => {
     console.error("[googleLogin]", error.message);
     return res.status(500).json({ message: "Server error" });
   }
-  res.redirect(`https://snitch-t6v0.onrender.com/`);
+  res.redirect(`https://after-coral.vercel.app/`);
 };
 
 export const getMe = async (req, res) => {
