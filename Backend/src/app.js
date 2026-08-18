@@ -23,10 +23,25 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: [config.FRONTEND_URL, config.FRONTEND_URL.replace(/\/$/, "")],
+    origin: (origin, callback) => {
+      const allowed = [
+        config.FRONTEND_URL,
+        config.FRONTEND_URL?.replace(/\/$/, ""),
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://after-coral.vercel.app",
+      ].filter(Boolean);
+      // allow requests with no origin (e.g. curl, Postman, server-to-server)
+      if (!origin || allowed.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS: origin ${origin} not allowed`));
+      }
+    },
     credentials: true,
   }),
 );
+
 app.use(passport.initialize());
 passport.use(
   new GoogleStrategy(

@@ -11,8 +11,8 @@ function createToken(userId) {
 function setCookieAndRespond(res, token, status, body) {
   res.cookie("token", token, {
     httpOnly: true,                    // not accessible via JS — prevents XSS theft
-    secure: isProd,                    // HTTPS only in production
-    sameSite: isProd ? "none" : "lax",
+    secure: true,                      // always true — backend is always on HTTPS (Render)
+    sameSite: "none",                  // always none — frontend & backend are cross-origin
     maxAge: 10 * 24 * 60 * 60 * 1000, // 10 days in ms
   });
   res.status(status).json(body);
@@ -102,8 +102,8 @@ export const googleLogin = async (req, res) => {
     const token = createToken(user._id);
     res.cookie("token", token, {
       httpOnly: true,
-      secure: isProd,
-      sameSite: isProd ? "none" : "lax",
+      secure: true,                    // always true — backend is always on HTTPS (Render)
+      sameSite: "none",               // always none — frontend & backend are cross-origin
       maxAge: 10 * 24 * 60 * 60 * 1000,
     });
   } catch (error) {
