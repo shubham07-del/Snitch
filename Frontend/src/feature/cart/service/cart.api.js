@@ -4,6 +4,14 @@ const api = axios.create({
     withCredentials:true
 }) 
 
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+
 export async function addItem({productId, variantId}) {
     const response = await api.post(`/add/${productId}/${variantId}`,{quantity:1})
     return response.data

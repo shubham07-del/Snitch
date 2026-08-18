@@ -23,6 +23,7 @@ async function sendTokenResponse(user, res, message, status) {
   setCookieAndRespond(res, token, status, {
     message,
     success: true,
+    token, // Send token in JSON payload for local storage
     user: {
       id: user._id,
       email: user.email,
@@ -106,16 +107,19 @@ export const googleLogin = async (req, res) => {
       sameSite: isProd ? "none" : "lax",
       maxAge: 10 * 24 * 60 * 60 * 1000,
     });
+    return res.redirect(`${config.FRONTEND_URL}/?token=${token}`);
   } catch (error) {
     console.error("[googleLogin]", error.message);
     return res.status(500).json({ message: "Server error" });
   }
-  res.redirect(`${config.FRONTEND_URL}/`);
 };
 
 export const getMe = async (req, res) => {
   try {
-    const token = req.cookies.token;
+    let token = req.cookies.token;
+    if(!token && req.headers.authorization && req.headers.authorization.startsWith("Bearer ")){
+        token = req.headers.authorization.split(" ")[1];
+    }
     if (!token) {
       return res.status(401).json({ message: "Not authenticated", user: null });
     }
