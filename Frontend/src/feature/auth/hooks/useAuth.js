@@ -1,6 +1,7 @@
 import { setError, setLoading, setUser } from "../state/auth.slice";
 import { login, register, getMe } from "../service/auth.api";
 import {useDispatch} from "react-redux"
+import toast from "react-hot-toast";
 export const useAuth = ()=>{
 
     const dispatch = useDispatch()
@@ -10,8 +11,11 @@ export const useAuth = ()=>{
         try {
             const data = await register({email, contact, password, fullname, isSeller})
             dispatch(setUser(data.user))
+            toast.success("Registered successfully!");
         } catch (error) {
-            dispatch(setError(error.message))
+            const errorMessage = error?.response?.data?.message || error.message || "Registration failed";
+            dispatch(setError(errorMessage))
+            toast.error(errorMessage);
         } finally {
             dispatch(setLoading(false))
         }
@@ -22,10 +26,13 @@ export const useAuth = ()=>{
         try {
             const data = await login({email, password})
             dispatch(setUser(data.user))
+            toast.success("Logged in successfully!");
             return data.user
         } catch (error) {
+            const errorMessage = error?.response?.data?.message || error.message || "Login failed";
             console.error("[useAuth] handleLogin error:", error)
-            dispatch(setError(error.message))
+            dispatch(setError(errorMessage))
+            toast.error(errorMessage);
         } finally {
             dispatch(setLoading(false))
         }

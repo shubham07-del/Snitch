@@ -3,6 +3,8 @@ import { RouterProvider } from "react-router-dom";
 import { router } from "./app.routes";
 import { useAuth } from "../feature/auth/hooks/useAuth";
 
+import { Toaster } from "react-hot-toast";
+
 const AppContent = () => {
   const { handleGetMe } = useAuth();
 
@@ -20,7 +22,12 @@ const AppContent = () => {
 };
 
 const App = () => {
-  return <AppContent />;
+  return (
+    <>
+      <AppContent />
+      <Toaster position="top-right" />
+    </>
+  );
 };
 
 export default App;

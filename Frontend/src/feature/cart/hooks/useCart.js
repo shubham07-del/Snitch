@@ -1,14 +1,20 @@
 import { addItem, getCart, incrementCartItem, decrementCartItem, createCartOrder, verifyCartOrder, removeCartItem, buyNowOrder } from "../service/cart.api";
 import { setItem, addItem as addItemToCart, incrementCartItemInState, decrementCartItemInState, removeCartItemFromState } from "../state/cart.slice";
 import { useDispatch } from "react-redux";
-
+import toast from "react-hot-toast";
 
 export const useCart = ()=>{
     const dispatch = useDispatch()
 
     const handleAddItem = async ({productId, variantId})=>{
-        const data = await addItem({productId, variantId})
-        return data
+        try {
+            const data = await addItem({productId, variantId})
+            toast.success("Added to cart");
+            return data
+        } catch (error) {
+            toast.error(error?.response?.data?.message || "Failed to add to cart");
+            throw error;
+        }
     }
 
     const handleGetCart = async ()=>{
@@ -30,13 +36,24 @@ export const useCart = ()=>{
     }
 
     const handleCreateCartOrder = async()=>{
-        const data = await createCartOrder()
-        return data.order
+        try {
+            const data = await createCartOrder()
+            return data.order
+        } catch (error) {
+            toast.error(error?.response?.data?.message || "Failed to create order");
+            throw error;
+        }
     }
 
     const handleVerifyOrder = async ({razorpay_order_id,razorpay_payment_id,razorpay_signature})=>{
-        const data = await verifyCartOrder({razorpay_order_id,razorpay_payment_id,razorpay_signature})
-        return data.message
+        try {
+            const data = await verifyCartOrder({razorpay_order_id,razorpay_payment_id,razorpay_signature})
+            toast.success("Order verified successfully!");
+            return data.message
+        } catch (error) {
+            toast.error(error?.response?.data?.message || "Failed to verify order");
+            throw error;
+        }
     }
 
     const handleRemoveCartItem = async ({productId, variantId})=>{{
@@ -46,8 +63,13 @@ export const useCart = ()=>{
     }}
 
     const handleBuyNow = async ({productId, variantId})=>{
-        const data = await buyNowOrder({productId, variantId})
-        return data.order
+        try {
+            const data = await buyNowOrder({productId, variantId})
+            return data.order
+        } catch (error) {
+            toast.error(error?.response?.data?.message || "Failed to initiate buy now");
+            throw error;
+        }
     }
 
     return {
