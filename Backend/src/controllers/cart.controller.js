@@ -6,6 +6,8 @@ import { getCartDetais } from "../dao/cart.dao.js";
 import paymentModel from "../models/payment.model.js";
 import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils.js";
 import { config } from "../config/config.js";
+import { sendOrderConfirmationEmail } from "../services/mail.service.js";
+import addressModel from "../models/address.model.js";
 
 export async function addToCart(req, res) {
     try {
@@ -292,6 +294,13 @@ export async function verifyPayment(req,res) {
         { $set: { items: [] } }
     )
     
+    // Fetch user and latest address to send confirmation email
+    const user = req.user;
+    const userAddress = await addressModel.findOne({ user: payment.user }).sort({ createdAt: -1 });
+    
+    // Send email asynchronously without blocking the response
+    sendOrderConfirmationEmail(user, payment, userAddress).catch(err => console.error(err));
+
     return res.status(200).json({
         message:"Payment verified successfully",
         success:true
