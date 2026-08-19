@@ -1,6 +1,7 @@
 import userModel from "../models/user.model.js";
 import { config } from "../config/config.js";
 import jwt from "jsonwebtoken";
+import redis from "../config/cache.js";
 
 const isProd = config.NODE_ENV === "production";
 
@@ -143,4 +144,42 @@ export const getMe = async (req, res) => {
   }
 };
 
+export const logoutUser = async (req,res)=>{
+ const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
+  if (token) {
+    await redis.set(token, Date.now().toString(), "EX", 60 * 60);
+  }
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+
+  res.status(201).json({
+    message: "User logout successfully."
+  });
+}
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { fullname, contact, email } = req.body;
+    const user = await userModel.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (fullname) user.fullname = fullname;
+    if (contact) user.contact = contact;
+    if (email) {
+      const existingUser = await userModel.findOne({ email });
+      if (existingUser && existingUser._id.toString() !== user._id.toString()) {
+        return res.status(400).json({ message: "Email already in use" });
+      }
+      user.email = email;
+    }
+
+    await user.save();
+    return res.status(200).json({ success: true, message: "Profile updated successfully", user });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};

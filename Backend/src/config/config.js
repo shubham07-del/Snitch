@@ -24,6 +24,10 @@ if(!process.env.RAZORPAY_API_KEY || !process.env.RAZORPAY_API_SECRET){
 if(!process.env.FRONTEND_URL){
     throw new Error("FRONTEND_URL is not defined at environment variable.")
 }
+
+if(!process.env.REDIS_HOST || !process.env.REDIS_PORT || !process.env.REDIS_PASSWORD){
+    throw new Error("Redis credentials are not defined at environment variable.")
+}
 export const config = {
     MONGO_URI:process.env.MONGO_URI,
     JWT_SECRET:process.env.JWT_SECRET,
@@ -35,4 +39,7 @@ export const config = {
     RAZORPAY_API_KEY:process.env.RAZORPAY_API_KEY,
     RAZORPAY_API_SECRET:process.env.RAZORPAY_API_SECRET,
     FRONTEND_URL:process.env.FRONTEND_URL,
+    REDIS_HOST:process.env.REDIS_HOST,
+    REDIS_PORT:process.env.REDIS_PORT,
+    REDIS_PASSWORD:process.env.REDIS_PASSWORD
 }

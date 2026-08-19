@@ -14,6 +14,7 @@ import OrderSuccess from "../feature/cart/pages/OrderSuccess";
 import RootLayout from "../components/RootLayout";
 import Address from "../feature/address/pages/Address";
 import Checkout from "../feature/address/components/Checkout";
+import Profile from "../feature/auth/pages/Profile";
 
 export const router = createBrowserRouter([
   // ── Auth pages (no Navbar) ──
@@ -53,6 +54,10 @@ export const router = createBrowserRouter([
       {
         path:"/checkout",
         element:<ProtectedRoute><Checkout/></ProtectedRoute>
+      },
+      {
+        path:"/profile",
+        element:<ProtectedRoute><Profile/></ProtectedRoute>
       }
     ],
   },

@@ -1,26 +1,32 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useAddress } from "../hooks/useAddress";
 import { useProduct } from "../../product/hooks/useProduct";
 import { useCart } from "../../cart/hooks/useCart";
 import { useRazorpay } from "react-razorpay";
+import { clearCart } from "../../cart/state/cart.slice";
+import toast from "react-hot-toast";
 
 const Checkout = () => {
   const location = useLocation();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  const isCart = location.state?.isCart;
   const productId = location.state?.productId;
   const variantId = location.state?.variantId;
 
   const { handleGetAddress } = useAddress();
   const { handleGetProductDetails } = useProduct();
- const { error, isLoading, Razorpay } = useRazorpay();
-  const {handleBuyNow, handleVerifyOrder} = useCart()
-  const address = useSelector((state) => state.address.address);
+  const { error, isLoading, Razorpay } = useRazorpay();
+  const { handleBuyNow, handleVerifyOrder, handleCreateCartOrder } = useCart();
+  
+  const address = useSelector((state) => state.address?.address);
   const { productDetails, loading: productLoading } = useSelector(
     (state) => state.product,
   );
+  const { items: cartItems, total: cartTotal } = useSelector((state) => state.cart);
 
   const user = useSelector((state) => state.auth.user);
 
@@ -47,10 +53,11 @@ const Checkout = () => {
   // Fetch Product
   // -----------------------------
   useEffect(() => {
+    if (isCart) return;
     if (!productId) return;
 
     handleGetProductDetails(productId);
-  }, [productId]);
+  }, [productId, isCart]);
   // -----------------------------
   // Find Selected Variant
   // -----------------------------
@@ -68,7 +75,7 @@ const Checkout = () => {
   // -----------------------------
   const currentPrice = selectedVariant?.price || productDetails?.price;
 
-  const subtotal = currentPrice?.amount || 0;
+  const subtotal = isCart ? (cartTotal || 0) : (currentPrice?.amount || 0);
 
   // Change this according to your delivery logic
   const deliveryCharge = 50;
@@ -89,7 +96,7 @@ const Checkout = () => {
   // -----------------------------
   // Loading
   // -----------------------------
-  if (addressLoading || productLoading) {
+  if (addressLoading || (!isCart && productLoading)) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-3">
@@ -104,7 +111,7 @@ const Checkout = () => {
   // -----------------------------
   // Invalid Checkout
   // -----------------------------
-  if (!productId || !variantId) {
+  if (!isCart && (!productId || !variantId)) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
         <h2 className="text-2xl font-semibold">Invalid Checkout</h2>
@@ -123,15 +130,7 @@ const Checkout = () => {
     );
   }
 
-  if (productLoading || addressLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <span className="h-9 w-9 animate-spin rounded-full border-4 border-gray-200 border-t-black" />
-      </div>
-    );
-  }
-
-  if (!productDetails) {
+  if (!isCart && !productDetails) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
         <h2 className="text-2xl font-semibold">Product Not Found</h2>
@@ -149,20 +148,27 @@ const Checkout = () => {
   // Payment
   // -----------------------------
   const handleBuyNowClick = async () => {
-    if (!variantId) {
-      alert("Please select a variant before buying.");
+    if (!isCart && !variantId) {
+      toast.error("Please select a variant before buying.");
       return;
     }
     if (!user) {
       navigate("/login");
+      return;
     }
     try {
-      const order = await handleBuyNow({
-        productId,
-        variantId,
-      });
+      let order;
+      if (isCart) {
+        order = await handleCreateCartOrder();
+      } else {
+        order = await handleBuyNow({
+          productId,
+          variantId,
+        });
+      }
+
       if (!order) {
-        alert("Failed to create order. Please try again.");
+        toast.error("Failed to create order. Please try again.");
         return;
       }
       const options = {
@@ -170,7 +176,7 @@ const Checkout = () => {
         amount: order.amount,
         currency: order.currency,
         name: "AFTER",
-        description: productDetails,
+        description: isCart ? "Cart Checkout" : productDetails?.productName,
         order_id: order.id,
         handler: async (response) => {
           const isValid = await handleVerifyOrder({
@@ -179,6 +185,7 @@ const Checkout = () => {
             razorpay_signature: response.razorpay_signature,
           });
           if (isValid) {
+            if (isCart) dispatch(clearCart());
             navigate(`/order-success?order_id=${response.razorpay_order_id}`);
           }
         },
@@ -192,8 +199,8 @@ const Checkout = () => {
       const razorpayInstance = new Razorpay(options);
       razorpayInstance.open();
     } catch (err) {
-      console.error("Buy now error:", err);
-      alert(err?.response?.data?.message ?? "Something went wrong.");
+      console.error("Checkout error:", err);
+      toast.error(err?.response?.data?.message ?? "Something went wrong.");
     }
   };
 
@@ -292,40 +299,68 @@ const Checkout = () => {
             <h2 className="text-xl font-semibold">Order Summary</h2>
 
             {/* Product */}
-            <div className="mt-6 flex gap-4 border-b border-gray-200 pb-5">
-              {/* Image */}
-              <div className="h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-gray-100">
-                <img
-                  src={
-                    selectedVariant?.images?.[0] || productDetails.images?.[0]
+            <div className="mt-6 flex flex-col gap-4 border-b border-gray-200 pb-5 max-h-80 overflow-y-auto">
+              {isCart ? (
+                cartItems?.map((item) => {
+                  let imgUrl = item.product?.images?.[0]?.url;
+                  const variants = item.product?.variants;
+                  if (Array.isArray(variants)) {
+                    const found = variants.find((v) => String(v._id) === String(item.variant));
+                    if (found?.images?.length) imgUrl = found.images[0].url;
+                  } else if (variants?.images?.length) {
+                    imgUrl = variants.images[0].url;
                   }
-                  alt={productDetails.productName}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-
-              {/* Product Info */}
-              <div className="min-w-0 flex-1">
-                <h3 className="truncate text-sm font-medium">
-                  {productDetails.productName}
-                </h3>
-
-                {selectedVariant?.attributes && (
-                  <div className="mt-2 space-y-1">
-                    {Object.entries(selectedVariant.attributes).map(
-                      ([key, value]) => (
-                        <p key={key} className="text-xs text-gray-500">
-                          {key}: {value}
-                        </p>
-                      ),
-                    )}
+                  
+                  return (
+                    <div key={item._id} className="flex gap-4">
+                      <div className="h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-gray-100">
+                        {imgUrl && <img src={imgUrl} alt="" className="h-full w-full object-cover" />}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="truncate text-sm font-medium">{item.product?.productName}</h3>
+                        <p className="mt-1 text-xs text-gray-500">Qty: {item.quantity}</p>
+                        <p className="mt-2 font-semibold">₹{((item.price?.amount || 0) * (item.quantity || 1)).toLocaleString("en-IN")}</p>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="flex gap-4">
+                  {/* Image */}
+                  <div className="h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-gray-100">
+                    <img
+                      src={
+                        selectedVariant?.images?.[0]?.url || productDetails?.images?.[0]?.url
+                      }
+                      alt={productDetails?.productName}
+                      className="h-full w-full object-cover"
+                    />
                   </div>
-                )}
 
-                <p className="mt-2 font-semibold">
-                  ₹{subtotal.toLocaleString("en-IN")}
-                </p>
-              </div>
+                  {/* Product Info */}
+                  <div className="min-w-0 flex-1">
+                    <h3 className="truncate text-sm font-medium">
+                      {productDetails?.productName}
+                    </h3>
+
+                    {selectedVariant?.attributes && (
+                      <div className="mt-2 space-y-1">
+                        {Object.entries(selectedVariant.attributes).map(
+                          ([key, value]) => (
+                            <p key={key} className="text-xs text-gray-500">
+                              {key}: {value}
+                            </p>
+                          ),
+                        )}
+                      </div>
+                    )}
+
+                    <p className="mt-2 font-semibold">
+                      ₹{subtotal.toLocaleString("en-IN")}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Price Details */}

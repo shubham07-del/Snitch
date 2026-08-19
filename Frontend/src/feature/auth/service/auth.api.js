@@ -1,7 +1,9 @@
 import axios from "axios"
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.MODE === "development" ? "http://localhost:3000" : "https://snitch-t6v0.onrender.com");
+
 const api = axios.create({
-    baseURL: `${import.meta.env.VITE_API_BASE_URL || ""}/api/auth`,
+    baseURL: `${API_BASE_URL}/api/auth`,
     withCredentials:true
 })
 
@@ -28,4 +30,16 @@ export const login = async ({email, password}) => {
 export const getMe = async () => {
     const response = await api.get("/me");
     return response.data;
+}
+
+
+export const logout = async ()=>{
+    const response = await api.get("/logout")
+    localStorage.removeItem("token");
+    return response.data
+}
+
+export const updateProfile = async ({fullname, contact, email}) => {
+    const response = await api.put("/profile", {fullname, contact, email})
+    return response.data
 }

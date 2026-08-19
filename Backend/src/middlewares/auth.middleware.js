@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken"
 import { config } from "../config/config.js"
 import userModel from "../models/user.model.js"
+import redis from "../config/cache.js"
 
 export const authenticateSeller = async (req,res,next)=>{
     let token = req.cookies.token
@@ -10,6 +11,13 @@ export const authenticateSeller = async (req,res,next)=>{
     if(!token){
         return res.status(401).json({
             message:"Unauthorized"
+        })
+    }
+    const isTokenBlacklisted = await redis.get(token)
+
+    if(isTokenBlacklisted){
+        return res.status(401).json({
+            message:"Invalid token"
         })
     }
     try {

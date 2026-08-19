@@ -1,5 +1,5 @@
 import { setError, setLoading, setUser } from "../state/auth.slice";
-import { login, register, getMe } from "../service/auth.api";
+import { login, register, getMe, logout, updateProfile } from "../service/auth.api";
 import {useDispatch} from "react-redux"
 import toast from "react-hot-toast";
 export const useAuth = ()=>{
@@ -50,5 +50,35 @@ export const useAuth = ()=>{
         }
     }
 
-    return {handleRegister, handleLogin, handleGetMe}
+    async function handleLogout() {
+        dispatch(setLoading(true))
+        try {
+            const data = await logout()
+            dispatch(setUser(null))
+            toast.success("Logged out successfully!");
+        } catch (error) {
+            const errorMessage = error?.response?.data?.message || error.message || "Logout failed";
+            dispatch(setError(errorMessage))
+            toast.error(errorMessage);
+        } finally {
+            dispatch(setLoading(false))
+        }
+    }
+
+    async function handleUpdateProfile({fullname, contact, email}) {
+        dispatch(setLoading(true))
+        try {
+            const data = await updateProfile({fullname, contact, email})
+            dispatch(setUser(data.user))
+            toast.success("Profile updated successfully!");
+            return data.user
+        } catch (error) {
+            const errorMessage = error?.response?.data?.message || error.message || "Profile update failed";
+            dispatch(setError(errorMessage))
+            toast.error(errorMessage);
+        } finally {
+            dispatch(setLoading(false))
+        }
+    }
+    return {handleRegister, handleLogin, handleGetMe, handleLogout, handleUpdateProfile}
 }

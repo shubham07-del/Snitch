@@ -225,6 +225,13 @@ const Address = () => {
               "Save Address"
             )}
           </button>
+          <button
+          onClick={()=> navigate("/checkout")}
+          disabled={loading}
+          className="w-full mt-5 rounded-lg bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Go Back
+          </button>
         </form>
       </div>
     </div>

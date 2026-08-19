@@ -1,6 +1,8 @@
 import axios from "axios"
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.MODE === "development" ? "http://localhost:3000" : "https://snitch-t6v0.onrender.com");
+
 const api = axios.create({
-    baseURL: `${import.meta.env.VITE_API_BASE_URL || ""}/api/cart`,
+    baseURL: `${API_BASE_URL}/api/cart`,
     withCredentials:true
 }) 
 

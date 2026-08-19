@@ -8,9 +8,12 @@ import {
   loginUser,
   registerUser,
   getMe,
+  logoutUser,
+  updateProfile,
 } from "../controllers/auth.controller.js";
 import passport from "passport";
 import { config } from "../config/config.js";
+import { authenticateUser } from "../middlewares/auth.middleware.js";
 
 const authRouter = Router();
 
@@ -32,4 +35,7 @@ authRouter.get(
   googleLogin,
 );
 
+
+authRouter.get("/logout",authenticateUser,logoutUser)
+authRouter.put("/profile", authenticateUser, updateProfile)
 export default authRouter;

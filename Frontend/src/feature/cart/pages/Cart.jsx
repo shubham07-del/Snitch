@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useCart } from "../hooks/useCart";
+import { useAddress } from "../../address/hooks/useAddress";
 import { useNavigate } from "react-router-dom";
 import { useRazorpay } from "react-razorpay";
 import { clearCart } from "../state/cart.slice";
@@ -8,7 +9,8 @@ const Cart = () => {
   const { error, isLoading, Razorpay } = useRazorpay();
   const dispatch = useDispatch();
   const { items, total } = useSelector((state) => state.cart);
-  const user = useSelector(state=>state.auth.user)
+  const user = useSelector(state=>state.auth.user);
+  const address = useSelector((state) => state.address?.address);
 
   const {
     handleGetCart,
@@ -18,10 +20,12 @@ const Cart = () => {
     handleVerifyOrder,
     handleRemoveCartItem
   } = useCart();
+  const { handleGetAddress } = useAddress();
   const navigate = useNavigate();
 
   useEffect(() => {
     handleGetCart();
+    handleGetAddress();
   }, []);
 
   const formatPrice = (amount, currency = "INR") =>
@@ -48,48 +52,19 @@ const Cart = () => {
     return Object.entries(variant.attributes);
   };
 
-  const handleCheckout = async () => {
-    try {
-      const order = await handleCreateCartOrder();
-      if (!order) {
-        alert("Failed to create order. Please try again.");
-        return;
-      }
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: order.amount, // Amount in paise
-        currency: order.currency,
-        name: "AFTER",
-        description: "Test Transaction",
-        order_id: order.id, // Generate order_id on server
-        handler: async (response) => {
-          const isValid = await handleVerifyOrder({
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature: response.razorpay_signature,
-          });
+  const handleCheckout = () => {
+    const hasAddress =
+      address?.fullname &&
+      address?.phone &&
+      address?.address &&
+      address?.city &&
+      address?.state &&
+      address?.pincode;
 
-          if (isValid) {
-            dispatch(clearCart());
-            navigate(`/order-success?order_id=${response?.razorpay_order_id}`);
-          }
-        },
-        prefill: {
-          name: user?.fullname,
-          email: user?.email,
-          contact: user?.contact,
-        },
-        theme: {
-          color: "#111111",
-          backdrop_color: "rgba(0,0,0,0.75)",
-        },
-      };
-
-      const razorpayInstance = new Razorpay(options);
-      razorpayInstance.open();
-    } catch (err) {
-      console.error("Checkout error:", err);
-      alert(err?.response?.data?.message ?? "Something went wrong during checkout.");
+    if (hasAddress) {
+      navigate("/checkout", { state: { isCart: true } });
+    } else {
+      navigate("/address");
     }
   };
 
