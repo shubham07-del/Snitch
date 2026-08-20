@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
-import dns from "dns"
-dns.setServers(["8.8.8.8"])
+import dns from 'dns';
 import { config } from './config.js';
 
-
+if (config.NODE_ENV !== "production") {
+  dns.setServers(["8.8.8.8"]);
+}
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(config.MONGO_URI);
